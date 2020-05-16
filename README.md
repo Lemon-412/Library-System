@@ -87,6 +87,10 @@
 
 ### Django框架
 
+Django光速入门视频：https://www.bilibili.com/video/BV1Wt411K7QH
+
+Django快速入门系列：https://www.bilibili.com/video/BV18W41137Qx
+
 - `Library`
   - `settings.py`：配置文件
   - `urls.py`：浏览器中的路径和`views.py`中函数的对应

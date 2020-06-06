@@ -6,8 +6,8 @@
 </head>
 <body>
     <h1>图书管理统一身份认证</h1>
-    {% if request.user.username %}
-        <h3> 欢迎 {{ request.user.username }} ！</h3>
+    {% if request.session.login_type %}
+        <h3> 欢迎 {{ request.session.xm }} ！</h3>
         <a href="/logout_view/" style="color: red"> 退出登录 </a>
     {% else %}
         <h3> 登录 </h3>
@@ -15,7 +15,7 @@
             {% csrf_token %}
             <div class="form-group">
                 <label for="zh"> 账号 </label>
-                <input name="username" type="text" class="form-control" id="zh" placeholder="" autofocus>
+                <input name="username" type="text" class="form-control" id="zh" placeholder="" value="{{ username }}" autofocus>
             </div>
             <div class="form-group">
                 <label for="mm"> 密码 </label>
@@ -25,7 +25,7 @@
             <br>
             <button> 登录 </button>
         </form>
-        <a href="/register/"> 读者注册（没做） </a>
+        <a href="/register/"> 读者注册 </a>
     {% endif %}
 </body>
 </html>

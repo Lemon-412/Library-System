@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> 读者个人状态查询 </title>
+</head>
+<body>
+    <h1> 图书管理系统 </h1>
+    <h3> 读者个人状态查询 </h3>
+    <h3> 欢迎 {{ xm }}</h3>
+    <a href="/logout_view/"> 退出登录 </a>
+    <br><br>
+    <a href="/dz_smztcx/"> 书目状态查询 </a>
+    <br>
+    <a href="/dz_yydj/"> 预约登记 </a>
+    <br>
+    <a href="/dz_grztcx/"> 个人状态查询 </a>
+    <br><br>
+    {% if grzt is not None %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th> 图书id </th>
+                    <th> 借阅时间 </th>
+                    <th> 应还时间 </th>
+                    <th> 归还时间 </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for elem in grzt %}
+                <tr>
+                    <td> {{ elem.tsid }} </td>
+                    <td> {{ elem.jysj }} </td>
+                    <td> {{ elem.yhsj }} </td>
+                    <td>
+                      {% if elem.ghsj is not None %}
+                      {{ elem.ghsj }}
+                      {% else %}
+                      尚未归还
+                      {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        读者尚未进行过借阅！
+    {% endif %}
+</body>
+</html>

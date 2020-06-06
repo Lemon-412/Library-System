@@ -6,20 +6,33 @@
 </head>
 <body>
     <h1> 读者注册 </h1>
-    <form role="form" action="/register_submit/" method="post">
+    <form role="form" action="/register/" method="post">
         {% csrf_token %}
         <div class="form-group">
-            <label for="zh"> 账号 </label>
-            <input name="username" type="text" class="form-control" id="zh" placeholder="" autofocus>
+            <label for="xm"> 姓名 </label>
+            <input name="xm" type="text" class="form-control" id="xm" placeholder="" autofocus value="{{ xm }}">
         </div>
+
         <div class="form-group">
-            <label for="mm"> 密码 </label>
-            <input name="password" type="password" class="form-control" id="mm" placeholder="" value="">
+            <label for="dh"> 电话 </label>
+            <input name="dh" type="text" class="form-control" id="dh" placeholder="" autofocus value="{{ dh }}">
         </div>
+
+        <div class="form-group">
+            <label for="yx"> 邮箱 </label>
+            <input name="yx" type="text" class="form-control" id="yx" placeholder="" autofocus value="{{ yx }}">
+        </div>
+
+        <div class="form-group">
+            <label for="mm"> 登录密码 </label>
+            <input name="mm" type="password" class="form-control" id="mm" placeholder="" value="">
+        </div>
+
         <div class="form-group">
             <label for="mmqr"> 确认密码 </label>
-            <input name="password2" type="password" class="form-control" id="mmqr" placeholder="" value="">
+            <input name="mmqr" type="password" class="form-control" id="mmqr" placeholder="" value="">
         </div>
+
         <div class="form-group" style="color: red">{{ msg }}</div>
         <br>
         <button> 注册 </button>

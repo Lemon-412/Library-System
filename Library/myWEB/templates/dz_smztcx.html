@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> 读者书目状态查询 </title>
+</head>
+<body>
+    <h1> 图书管理系统 </h1>
+    <h3> 读者书目状态查询 </h3>
+    <h3> 欢迎 {{ xm }}</h3>
+    <a href="/logout_view/"> 退出登录 </a>
+    <br><br>
+    <a href="/dz_smztcx/"> 书目状态查询 </a>
+    <br>
+    <a href="/dz_yydj/"> 预约登记 </a>
+    <br>
+    <a href="/dz_grztcx/"> 个人状态查询 </a>
+    <br><br>
+
+    <form role="form" action="/dz_smztcx/" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="sm"> 书名 </label>
+            <input name="sm" type="text" class="form-control" id="sm" placeholder="" value="{{ sm }}" autofocus>
+        </div>
+        <div class="form-group">
+            <label for="zz"> 作者 </label>
+            <input name="zz" type="text" class="form-control" id="zz" placeholder="" value="{{ zz }}">
+        </div>
+        <div class="form-group">
+            <label for="isbn"> ISBN号 </label>
+            <input name="isbn" type="text" class="form-control" id="isbn" placeholder="" value="{{ isbn }}">
+        </div>
+        <div class="form-group">
+            <label for="cbs"> 出版社 </label>
+            <input name="cbs" type="text" class="form-control" id="cbs" placeholder="" value="{{ cbs }}">
+        </div>
+        <div class="form-group" style="color: red">{{ msg }}</div>
+        <br>
+        <button> 查询 </button>
+    </form>
+
+    {% if smzt %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th> ISBN号 </th>
+                    <th> 书名 </th>
+                    <th> 作者 </th>
+                    <th> 出版社 </th>
+                    <th> 出版年月 </th>
+                    <th> 库藏册数 </th>
+                    <th> 未借出册数 </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for elem in smzt %}
+                <tr>
+                    <td> {{ elem.tsid }} </td>
+                    <td> {{ elem.jysj }} </td>
+                    <td> {{ elem.yhsj }} </td>
+                    <td>
+                      {% if elem.ghsj is not None %}
+                      {{ elem.ghsj }}
+                      {% else %}
+                      尚未归还
+                      {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</body>
+</html>

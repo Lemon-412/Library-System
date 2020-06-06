@@ -3,14 +3,16 @@ from django.db import models
 
 
 class dzTable(models.Model):  # 读者信息
-    dzid = models.CharField(max_length=20, primary_key=True)  # 读者ID
+    dzid = models.AutoField(primary_key=True)  # 读者ID
+    psw = models.CharField(max_length=256, default='passw0rd')  # 读者密码
     xm = models.CharField(max_length=10, blank=False)  # 姓名
     dh = models.CharField(max_length=20)
     email = models.CharField(max_length=50)
 
 
 class tsglyTable(models.Model):  # 图书管理员信息
-    gh = models.CharField(max_length=10, primary_key=True)  # 工号
+    gh = models.CharField(max_length=10, primary_key=True)  # 工号，格式：gh001
+    psw = models.CharField(max_length=256, default='passw0rd')  # 管理员密码
     xm = models.CharField(max_length=10, blank=False)  # 姓名
 
 

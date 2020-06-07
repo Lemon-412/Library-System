@@ -40,35 +40,41 @@
         <button> 查询 </button>
     </form>
 
-    {% if smzt %}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th> ISBN号 </th>
-                    <th> 书名 </th>
-                    <th> 作者 </th>
-                    <th> 出版社 </th>
-                    <th> 出版年月 </th>
-                    <th> 库藏册数 </th>
-                    <th> 未借出册数 </th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for elem in smzt %}
-                <tr>
-                    <td> {{ elem.tsid }} </td>
-                    <td> {{ elem.jysj }} </td>
-                    <td> {{ elem.yhsj }} </td>
-                    <td>
-                      {% if elem.ghsj is not None %}
-                      {{ elem.ghsj }}
-                      {% else %}
-                      尚未归还
-                      {% endif %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    {% if request.method == 'POST' %}
+        查询结果：
+        <br>
+        {% if not smzt %}
+            未找到匹配信息！
+        {% else %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th> ISBN号 </th>
+                        <th> 书名 </th>
+                        <th> 作者 </th>
+                        <th> 出版社 </th>
+                        <th> 出版年月 </th>
+                        <th> 库藏册数 </th>
+                        <th> 不外借册数 </th>
+                        <th> 未借出册数 </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for elem in smzt %}
+                        <tr>
+                            <td> {{ elem.ISBN }} </td>
+                            <td> {{ elem.sm }} </td>
+                            <td> {{ elem.zz }} </td>
+                            <td> {{ elem.cbs }} </td>
+                            <td> {{ elem.cbny }} </td>
+                            <td> {{ elem.kccs }} </td>
+                            <td> {{ elem.bwjcs }} </td>
+                            <td> {{ elem.wjccs }} </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
     {% endif %}
 </body>
 </html>

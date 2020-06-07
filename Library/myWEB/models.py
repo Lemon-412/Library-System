@@ -30,7 +30,7 @@ class tsTable(models.Model):  # 图书信息
     tsid = models.CharField(max_length=20, primary_key=True)  # 图书id
     isbn = models.ForeignKey(smTable, on_delete=models.CASCADE)  # ISBN号
     cfwz = models.CharField(max_length=20)  # 存放位置
-    zt = models.CharField(max_length=20, blank=False)  # 状态
+    zt = models.CharField(max_length=20, blank=False)  # 状态（未借出、已借出、不外借、已预约）
     jbr = models.ForeignKey(tsglyTable, on_delete=models.CASCADE)  # 经办人
 
 

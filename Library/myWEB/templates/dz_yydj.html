@@ -15,6 +15,45 @@
     <a href="/dz_yydj/"> 预约登记 </a>
     <br>
     <a href="/dz_grztcx/"> 个人状态查询 </a>
+    <br><br>
+
+    进行新的预约登记:
+    <form role="form" action="/dz_yydj/" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="ISBN"> ISBN号 </label>
+            <input name="ISBN" type="text" class="form-control" id="ISBN" placeholder="" value="{{ ISBN }}" autofocus>
+        </div>
+        <div class="form-group" style="color: red">{{ msg }}</div>
+        <br>
+        <button> 预约 </button>
+    </form>
+
+    当前已进行的预约登记:
     <br>
+    {% if yydj %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th> ISBN号 </th>
+                    <th> 书名 </th>
+                    <th> 预约时间 </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for elem in yydj %}
+                <tr>
+                    <td> {{ elem.ISBN }} </td>
+                    <td> {{ elem.sm }} </td>
+                    <td> {{ elem.yysj }} </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        暂无记录！
+        <br>
+    {% endif %}
+
 </body>
 </html>

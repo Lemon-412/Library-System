@@ -3,9 +3,36 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.hashers import make_password, check_password  # 用户密码管理
 from .models import dzTable, tsglyTable, smTable, tsTable, jsTable, yyTable  # 引入数据库
 
-# from django.contrib.auth.decorators import login_required
-# from django.contrib.auth import authenticate
-# from django.contrib.auth import login, logout
+import smtplib  # 邮件服务
+from email.mime.text import MIMEText  # 邮件服务
+from email.utils import formataddr  # 邮件服务
+
+from time import sleep
+from datetime import datetime
+
+
+def mail(title, content, coding_type='HTML', retry_flag=False):
+    my_sender = ''  # 发件人邮箱账号
+    my_pass = ''  # 发件人邮箱口令
+    my_user = ''  # 收件人邮箱账号
+    print('Mailing...', title)
+    while True:
+        try:
+            msg = MIMEText(content, coding_type, 'utf-8')
+            msg['From'] = formataddr(['Lemon', my_sender])
+            msg['To'] = formataddr(['Lemon', my_user])
+            msg['Subject'] = title
+            server = smtplib.SMTP_SSL('smtp.qq.com', 465)
+            server.login(my_sender, my_pass)
+            server.sendmail(my_sender, [my_user, ], msg.as_string())
+            server.quit()
+        except Exception as err:
+            print('in mailing ', err)
+            if not retry_flag:
+                break
+            sleep(5)
+            continue
+        return
 
 
 def home(request):
@@ -31,7 +58,7 @@ def login_view(request):  # 读者、管理员用户登录
                 request.session['xm'] = result[0].xm
                 return redirect('/dz_index/')
             else:
-                context["msg"] = "密码输入错误"
+                context["msg"] = "账号或密码输入错误"
                 return render(request, 'home.html', context=context)
         elif 'gh' in username:  # 管理员使用工号登录
             result = tsglyTable.objects.filter(gh=username)
@@ -41,7 +68,7 @@ def login_view(request):  # 读者、管理员用户登录
                 request.session['xm'] = result[0].xm
                 return redirect('/gly_index/')
             else:
-                context["msg"] = "密码输入错误"
+                context["msg"] = "账号或密码输入错误"
                 return render(request, 'home.html', context=context)
         else:  # 读者使用id登录
             username = username.lstrip('0')
@@ -52,7 +79,7 @@ def login_view(request):  # 读者、管理员用户登录
                 request.session['xm'] = result[0].xm
                 return redirect('/dz_index/')
             else:
-                context["msg"] = "密码输入错误"
+                context["msg"] = "账号或密码输入错误"
                 return render(request, 'home.html', context=context)
     else:
         return render(request, 'home.html')
@@ -118,7 +145,43 @@ def dz_smztcx(request):  # 读者书目状态查询
         return HttpResponseRedirect("/")
     context = dict()
     context['xm'] = request.session.get('xm', None)
-    return render(request, 'dz_smztcx.html', context=context)
+    if request.method == 'GET':
+        return render(request, 'dz_smztcx.html', context=context)
+    else:
+        context['sm'] = sm = request.POST.get('sm')  # 书名
+        context['zz'] = zz = request.POST.get('zz')  # 作者
+        context['ISBN'] = isbn = request.POST.get('ISBN')  # ISBN
+        context['cbs'] = cbs = request.POST.get('cbs')  # 出版社
+        context['msg'] = "未知错误，请重试"
+        result = smTable.objects.all()
+        if not sm and not zz and not isbn and not cbs:
+            context['msg'] = "请输入有效筛选信息！"
+            return render(request, 'dz_smztcx.html', context=context)
+        if sm:
+            result = result.filter(sm__contains=sm)
+        if zz:
+            result = result.filter(zz__contains=zz)
+        if isbn:
+            result = result.filter(isbn__startswith=isbn)
+        if cbs:
+            result = result.filter(cbs__contains=cbs)
+        smzt = []
+        for elem in result:
+            smzt.append(
+                {
+                    'ISBN': elem.isbn,
+                    'sm': elem.sm,
+                    'zz': elem.zz,
+                    'cbs': elem.cbs,
+                    'cbny': elem.cbny,
+                    'kccs': len(tsTable.objects.filter(isbn=elem.isbn)),
+                    'bwjcs': len(tsTable.objects.filter(zt='不外借')),
+                    'wjccs': len(tsTable.objects.filter(zt='未借出')),
+                }
+            )
+        context['msg'] = ''
+        context['smzt'] = smzt
+        return render(request, 'dz_smztcx.html', context=context)
 
 
 def dz_yydj(request):  # 读者预约登记(借不到的书)
@@ -126,7 +189,56 @@ def dz_yydj(request):  # 读者预约登记(借不到的书)
         return HttpResponseRedirect("/")
     context = dict()
     context['xm'] = request.session.get('xm', None)
-    return render(request, 'dz_yydj.html', context=context)
+    yydj = []
+    result = yyTable.objects.filter(dzid=request.session.get('dzid', None))
+    for elem in result:
+        yydj.append(
+            {
+                'ISBN': elem.isbn,
+                'sm': smTable.objects.get(isbn=elem.isbn).sm,
+                'yysj': elem.yysj,
+            }
+        )
+    context['yydj'] = yydj
+    if request.method == 'GET':
+        return render(request, 'dz_yydj.html', context=context)
+    elif request.method == 'POST':
+        context['msg'] = "未知错误，请重试"
+        context['ISBN'] = isbn = request.POST.get('ISBN')
+        if not isbn:
+            context['msg'] = "请填写ISBN号进行预约登记"
+            return render(request, 'dz_yydj.html', context=context)
+        result = smTable.objects.filter(isbn=isbn)
+        if not result.exists():
+            context['msg'] = "ISBN输入有误，请重试"
+            return render(request, 'dz_yydj.html', context=context)
+        result = tsTable.objects.filter(isbn=isbn, zt='未借出')
+        if result.exists():
+            context['msg'] = "该书仍有馆藏，可以直接借阅(图书id：" + result[0].tsid + ")"
+            return render(request, 'dz_yydj.html', context=context)
+        result = yyTable.objects.filter(isbn=isbn, dzid=request.session.get('dzid', None))
+        if result.exists():
+            context['msg'] = "您已预约该书，请勿重复预约！"
+            return render(request, 'dz_yydj.html', context=context)
+        item = yyTable(
+            dzid=request.session.get('dzid', None),
+            isbn=isbn,
+            yysj=str(datetime.now().year) + '-' + str(datetime.now().month) + '-' + str(datetime.now().day)
+        )
+        item.save()
+        context['msg'] = "预约成功！预约凭证已发送至您的邮箱！"
+        yydj = []
+        result = yyTable.objects.filter(dzid=request.session.get('dzid', None))
+        for elem in result:
+            yydj.append(
+                {
+                    'ISBN': elem.isbn,
+                    'sm': smTable.objects.get(isbn=elem.isbn).sm,
+                    'yysj': elem.yysj,
+                }
+            )
+        context['yydj'] = yydj
+        return render(request, 'dz_yydj.html', context=context)
 
 
 def dz_grztcx(request):  # 读者个人(借书)状态查询

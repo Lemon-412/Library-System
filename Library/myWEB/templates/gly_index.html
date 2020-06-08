@@ -20,5 +20,13 @@
     <br>
     <a href="/gly_ck/"> 出库 </a>
     <br>
+    <br>
+    <form role="form" action="/gly_index/" method="post">
+        {% csrf_token %}
+        <button> 图书馆状态刷新 </button>
+        <br>
+        <div class="form-group" style="color: red">{{ msg }}</div>
+        <br>
+    </form>
 </body>
 </html>

@@ -8,14 +8,17 @@ from email.mime.text import MIMEText  # 邮件服务
 from email.utils import formataddr  # 邮件服务
 
 from time import sleep
-from datetime import datetime
+from django.utils import timezone  # django带时区管理的时间类
 
 
 def mail(title, content, coding_type='HTML', retry_flag=False):
     my_sender = ''  # 发件人邮箱账号
     my_pass = ''  # 发件人邮箱口令
     my_user = ''  # 收件人邮箱账号
-    print('Mailing...', title)
+    really_mail = False
+    print('标题：' + title + '\n正文：' + content + '\n')
+    if not really_mail:
+        return
     while True:
         try:
             msg = MIMEText(content, coding_type, 'utf-8')
@@ -150,7 +153,7 @@ def dz_smztcx(request):  # 读者书目状态查询
     else:
         context['sm'] = sm = request.POST.get('sm')  # 书名
         context['zz'] = zz = request.POST.get('zz')  # 作者
-        context['ISBN'] = isbn = request.POST.get('ISBN')  # ISBN
+        context['isbn'] = isbn = request.POST.get('isbn')  # ISBN
         context['cbs'] = cbs = request.POST.get('cbs')  # 出版社
         context['msg'] = "未知错误，请重试"
         result = smTable.objects.all()
@@ -190,12 +193,12 @@ def dz_yydj(request):  # 读者预约登记(借不到的书)
     context = dict()
     context['xm'] = request.session.get('xm', None)
     yydj = []
-    result = yyTable.objects.filter(dzid=request.session.get('dzid', None))
+    result = yyTable.objects.filter(dzid_id=request.session.get('id', None))
     for elem in result:
         yydj.append(
             {
-                'ISBN': elem.isbn,
-                'sm': smTable.objects.get(isbn=elem.isbn).sm,
+                'ISBN': elem.isbn.isbn,
+                'sm': smTable.objects.get(isbn=elem.isbn.isbn).sm,
                 'yysj': elem.yysj,
             }
         )
@@ -216,24 +219,29 @@ def dz_yydj(request):  # 读者预约登记(借不到的书)
         if result.exists():
             context['msg'] = "该书仍有馆藏，可以直接借阅(图书id：" + result[0].tsid + ")"
             return render(request, 'dz_yydj.html', context=context)
-        result = yyTable.objects.filter(isbn=isbn, dzid=request.session.get('dzid', None))
+        result = yyTable.objects.filter(isbn=isbn, dzid=request.session.get('id', None))
         if result.exists():
             context['msg'] = "您已预约该书，请勿重复预约！"
             return render(request, 'dz_yydj.html', context=context)
         item = yyTable(
-            dzid=request.session.get('dzid', None),
-            isbn=isbn,
-            yysj=str(datetime.now().year) + '-' + str(datetime.now().month) + '-' + str(datetime.now().day)
+            dzid_id=request.session.get('id', None),
+            isbn=smTable.objects.get(isbn=isbn),
+            yysj=timezone.now()
         )
         item.save()
         context['msg'] = "预约成功！预约凭证已发送至您的邮箱！"
+        mail(
+            "预约成功通知函",
+            "您已成功预约一本书, 书名为《" + str(smTable.objects.get(isbn=isbn).sm) +
+            "》。预约时间：" + str(timezone.now())
+        )
         yydj = []
-        result = yyTable.objects.filter(dzid=request.session.get('dzid', None))
+        result = yyTable.objects.filter(dzid_id=request.session.get('id', None))
         for elem in result:
             yydj.append(
                 {
-                    'ISBN': elem.isbn,
-                    'sm': smTable.objects.get(isbn=elem.isbn).sm,
+                    'ISBN': elem.isbn.isbn,
+                    'sm': smTable.objects.get(isbn=elem.isbn.isbn).sm,
                     'yysj': elem.yysj,
                 }
             )
@@ -262,15 +270,62 @@ def gly_index(request):  # 管理员首页
         return HttpResponseRedirect("/")
     context = dict()
     context['xm'] = request.session.get('xm')
-    return render(request, 'gly_index.html', context=context)
+    if request.method == 'GET':
+        return render(request, 'gly_index.html', context=context)
+    else:
+        result = yyTable.objects.extra(where=["""datediff(curdate(), yysj) > 10"""])
+        for elem in result:
+            mail(
+                "预约过期通知",
+                "很遗憾，您预约的书《" + str(smTable.objects.get(isbn=elem.isbn.isbn).sm) + "》预约时间已经过期，您可以再次尝试预约"
+            )
+        context['msg'] = "已经清理" + str(len(result)) + "份过期预约信息"
+        result.delete()
+        return render(request, 'gly_index.html', context=context)
 
 
 def gly_smztcx(request):  # 管理员书目状态查询
     if request.session.get('login_type', None) != 'gly':
         return HttpResponseRedirect("/")
     context = dict()
-    context['xm'] = request.session.get('xm')
-    return render(request, 'gly_smztcx.html', context=context)
+    context['xm'] = request.session.get('xm', None)
+    if request.method == 'GET':
+        return render(request, 'gly_smztcx.html', context=context)
+    else:
+        context['sm'] = sm = request.POST.get('sm')  # 书名
+        context['zz'] = zz = request.POST.get('zz')  # 作者
+        context['ISBN'] = isbn = request.POST.get('ISBN')  # ISBN
+        context['cbs'] = cbs = request.POST.get('cbs')  # 出版社
+        context['msg'] = "未知错误，请重试"
+        result = smTable.objects.all()
+        if not sm and not zz and not isbn and not cbs:
+            context['msg'] = "请输入有效筛选信息！"
+            return render(request, 'gly_smztcx.html', context=context)
+        if sm:
+            result = result.filter(sm__contains=sm)
+        if zz:
+            result = result.filter(zz__contains=zz)
+        if isbn:
+            result = result.filter(isbn__startswith=isbn)
+        if cbs:
+            result = result.filter(cbs__contains=cbs)
+        smzt = []
+        for elem in result:
+            smzt.append(
+                {
+                    'ISBN': elem.isbn,
+                    'sm': elem.sm,
+                    'zz': elem.zz,
+                    'cbs': elem.cbs,
+                    'cbny': elem.cbny,
+                    'kccs': len(tsTable.objects.filter(isbn=elem.isbn)),
+                    'bwjcs': len(tsTable.objects.filter(zt='不外借')),
+                    'wjccs': len(tsTable.objects.filter(zt='未借出')),
+                }
+            )
+        context['msg'] = ''
+        context['smzt'] = smzt
+        return render(request, 'gly_smztcx.html', context=context)
 
 
 def gly_js(request):  # 管理员借书

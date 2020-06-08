@@ -20,5 +20,65 @@
     <br>
     <a href="/gly_ck/"> 出库 </a>
     <br>
+    <br>
+    <form role="form" action="/gly_smztcx/" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="sm"> 书名 </label>
+            <input name="sm" type="text" class="form-control" id="sm" placeholder="" value="{{ sm }}" autofocus>
+        </div>
+        <div class="form-group">
+            <label for="zz"> 作者 </label>
+            <input name="zz" type="text" class="form-control" id="zz" placeholder="" value="{{ zz }}">
+        </div>
+        <div class="form-group">
+            <label for="isbn"> ISBN号 </label>
+            <input name="isbn" type="text" class="form-control" id="isbn" placeholder="" value="{{ isbn }}">
+        </div>
+        <div class="form-group">
+            <label for="cbs"> 出版社 </label>
+            <input name="cbs" type="text" class="form-control" id="cbs" placeholder="" value="{{ cbs }}">
+        </div>
+        <div class="form-group" style="color: red">{{ msg }}</div>
+        <br>
+        <button> 查询 </button>
+    </form>
+
+    {% if request.method == 'POST' %}
+        查询结果：
+        <br>
+        {% if not smzt %}
+            未找到匹配信息！
+        {% else %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th> ISBN号 </th>
+                        <th> 书名 </th>
+                        <th> 作者 </th>
+                        <th> 出版社 </th>
+                        <th> 出版年月 </th>
+                        <th> 库藏册数 </th>
+                        <th> 不外借册数 </th>
+                        <th> 未借出册数 </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for elem in smzt %}
+                        <tr>
+                            <td> {{ elem.ISBN }} </td>
+                            <td> {{ elem.sm }} </td>
+                            <td> {{ elem.zz }} </td>
+                            <td> {{ elem.cbs }} </td>
+                            <td> {{ elem.cbny }} </td>
+                            <td> {{ elem.kccs }} </td>
+                            <td> {{ elem.bwjcs }} </td>
+                            <td> {{ elem.wjccs }} </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    {% endif %}
 </body>
 </html>

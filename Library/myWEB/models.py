@@ -39,15 +39,16 @@ class jsTable(models.Model):  # 借书信息
     tsid = models.ForeignKey(tsTable, on_delete=models.CASCADE)  # 图书ID
     jysj = models.DateTimeField()  # 借阅时间
     yhsj = models.DateTimeField()  # 应还时间
-    ghsj = models.DateTimeField()  # 归还时间
+    ghsj = models.DateTimeField(blank=True, null=True)  # 归还时间
 
     class Meta:
-        unique_together = ("dzid", "tsid")
+        unique_together = ("dzid", "tsid", "jysj")
 
 
 class yyTable(models.Model):  # 预约信息
     dzid = models.ForeignKey(dzTable, on_delete=models.CASCADE)  # 读者ID
     isbn = models.ForeignKey(smTable, on_delete=models.CASCADE)  # ISBN号
+    tsid = models.ForeignKey(tsTable, blank=True, null=True, on_delete=models.CASCADE)  # 图书ID
     yysj = models.DateTimeField()
 
     class Meta:

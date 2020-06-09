@@ -38,6 +38,7 @@
                     <th> ISBN号 </th>
                     <th> 书名 </th>
                     <th> 预约时间 </th>
+                    <th> 预约图书id </th>
                 </tr>
             </thead>
             <tbody>
@@ -46,6 +47,11 @@
                     <td> {{ elem.ISBN }} </td>
                     <td> {{ elem.sm }} </td>
                     <td> {{ elem.yysj }} </td>
+                    {% if elem.tsid %}
+                        <td> {{ elem.tsid }} </td>
+                    {% else %}
+                        <td> 暂无 </td>
+                    {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>

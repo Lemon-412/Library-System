@@ -8,6 +8,13 @@
 
 
 
+### TODO
+
+- 后端基本做完了
+- 急需测试！！！
+
+
+
 ### 第一次使用github
 
 - 下载并安装git bash
@@ -72,8 +79,9 @@
   - 运行命令`python manage.py migrate`进行迁移
   - 运行命令`python manage.py createsuperuser`创建超级用户
 
-- 修改数据库表格定义
+- 数据库迁移
 
+  - 首先保证django已经成功连上数据库
   - 修改`models.py`
   - 运行命令`python manage.py makemigrations`创建迁移文件
   - 运行命令`python manage.py migrate`进行迁移
@@ -86,6 +94,8 @@
 
 
 ### Django框架
+
+Django开发手册：https://docs.djangoproject.com/en/3.0/
 
 Django光速入门视频：https://www.bilibili.com/video/BV1Wt411K7QH
 
@@ -100,8 +110,3 @@ Django快速入门系列：https://www.bilibili.com/video/BV18W41137Qx
   - `templates`：存放所有html的文件夹
 
 
-
-### TODO
-
-- 明确接下来要做的页面
-- 明确每个页面需要和后台交互的数据

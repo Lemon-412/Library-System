@@ -20,5 +20,20 @@
     <br>
     <a href="/gly_ck/"> 出库 </a>
     <br>
+    <br>
+    <form role="form" action="/gly_js/" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="dzid"> 读者id </label>
+            <input name="dzid" type="text" class="form-control" id="dzid" placeholder="" value="{{ dzid }}" autofocus>
+        </div>
+        <div class="form-group">
+            <label for="isbn"> ISBN号 </label>
+            <input name="isbn" type="text" class="form-control" id="isbn" placeholder="" value="{{ isbn }}">
+        </div>
+        <div class="form-group" style="color: red">{{ msg }}</div>
+        <br>
+        <button> 借书 </button>
+    </form>
 </body>
 </html>

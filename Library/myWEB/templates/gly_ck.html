@@ -22,21 +22,24 @@
     <br>
     <br>
 
-        <form role="form" action="/gly_ck/" method="post">
+    <form role="form" action="/gly_ck/" method="post">
         {% csrf_token %}
         <div class="form-group">
             <label for="isbn"> ISBN号 </label>
             <input name="isbn" type="text" class="form-control" id="isbn" placeholder="" value="{{ isbn }}" autofocus>
         </div>
         <div class="form-group">
-            <label for="rksl"> 出库数量 </label>
-            <input name="rksl" type="text" class="form-control" id="rksl" placeholder="" value="{{ rksl }}" autofocus>
+            <label for="cksl"> 出库数量 </label>
+            <input name="cksl" type="number" min="1" class="form-control" id="cksl" placeholder="" value="{{ cksl }}" autofocus>
         </div>
         <div class="form-group">
-            <label for="ckyx"> 优先从何处出库（未借出、不外借） </label>
+            <label for="ckyx"> 优先从何处出库（流通室、阅览室） </label>
             <input name="ckyx" type="text" class="form-control" id="ckyx" placeholder="" value="{{ ckyx }}" autofocus>
         </div>
         <div class="form-group" style="color: red">{{ msg }}</div>
+        {% for elem in tsid %}
+            <font color="red"> {{ elem }} </font>
+        {% endfor %}
         <br>
         <button> 出库 </button>
     </form>

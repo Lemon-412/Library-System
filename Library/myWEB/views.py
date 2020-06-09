@@ -3,6 +3,8 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.hashers import make_password, check_password  # 用户密码管理
 from .models import dzTable, tsglyTable, smTable, tsTable, jsTable, yyTable  # 引入数据库
 
+from django.db.models import Q  # 查询语句不等于
+
 import smtplib  # 邮件服务
 from email.mime.text import MIMEText  # 邮件服务
 from email.utils import formataddr  # 邮件服务
@@ -65,7 +67,7 @@ def login_view(request):  # 读者、管理员用户登录
                 return render(request, 'home.html', context=context)
         elif 'gh' in username:  # 管理员使用工号登录
             result = tsglyTable.objects.filter(gh=username)
-            if result.exists and password == result[0].psw:  # 管理员登录成功
+            if result.exists() and password == result[0].psw:  # 管理员登录成功
                 request.session['login_type'] = 'gly'
                 request.session['id'] = result[0].gh
                 request.session['xm'] = result[0].xm
@@ -226,7 +228,8 @@ def dz_yydj(request):  # 读者预约登记(借不到的书)
         item = yyTable(
             dzid_id=request.session.get('id', None),
             isbn=smTable.objects.get(isbn=isbn),
-            yysj=timezone.now()
+            yysj=timezone.now(),
+            # tsid_id=None
         )
         item.save()
         context['msg'] = "预约成功！预约凭证已发送至您的邮箱！"
@@ -243,6 +246,7 @@ def dz_yydj(request):  # 读者预约登记(借不到的书)
                     'ISBN': elem.isbn.isbn,
                     'sm': smTable.objects.get(isbn=elem.isbn.isbn).sm,
                     'yysj': elem.yysj,
+                    'tsid': elem.tsid.tsid if elem.tsid else None
                 }
             )
         context['yydj'] = yydj
@@ -279,6 +283,11 @@ def gly_index(request):  # 管理员首页
                 "预约过期通知",
                 "很遗憾，您预约的书《" + str(smTable.objects.get(isbn=elem.isbn.isbn).sm) + "》预约时间已经过期，您可以再次尝试预约"
             )
+            if elem.tsid:  # 已经被成功预约，清除预约状态
+                ts = elem.tsid
+                ts.zt = '未借出'
+                ts.save()
+                print(ts.zt)
         context['msg1'] = "清理" + str(len(result)) + "份过期预约信息。"
         result.delete()
         result = jsTable.objects.filter(ghsj=None).extra(where=["""datediff(curdate(), yhsj) = 0"""])
@@ -337,7 +346,68 @@ def gly_js(request):  # 管理员借书
         return HttpResponseRedirect("/")
     context = dict()
     context['xm'] = request.session.get('xm')
-    return render(request, 'gly_js.html', context=context)
+    if request.method == 'GET':
+        return render(request, 'gly_js.html', context=context)
+    else:
+        context['dzid'] = dzid = request.POST.get('dzid')
+        context['isbn'] = isbn = request.POST.get('isbn')
+        context['msg'] = "未知错误，请重试"
+        if not dzid or not isbn:
+            context['msg'] = "请填写完整的读者id和ISBN号"
+            return render(request, 'gly_js.html', context=context)
+        result = dzTable.objects.filter(dzid=dzid)
+        if not result.exists():
+            context['msg'] = "读者id不存在！"
+            return render(request, 'gly_js.html', context=context)
+        result = smTable.objects.filter(isbn=isbn)
+        if not result.exists():
+            context['msg'] = "ISBN号填写错误，不存在该类书籍！"
+            return render(request, 'gly_js.html', context=context)
+        result = jsTable.objects.filter(dzid_id=dzid)
+        if len(result) >= 10:
+            context['msg'] = "该读者借阅书籍数已经达到上限！"
+            return render(request, 'gly_js.html', context=context)
+        result = yyTable.objects.filter(dzid_id=dzid, isbn_id=isbn)
+        if result.exists() and result[0].tsid_id is not None:  # 借书有过预约，且预约成功（删除预约、添加借书信息、修改图书状态）
+            ts = tsTable.objects.get(tsid=result[0].tsid_id)
+            ts.zt = '已借出'
+            ts.save()  # 修改图书状态
+            item = jsTable(
+                dzid_id=dzid,
+                tsid=result[0],
+                jysj=timezone.now(),
+                yhsj=timezone.now() + timezone.timedelta(days=60)
+            )
+            item.save()  # 添加借书信息
+            mail(
+                "借书凭证",
+                "您已借阅了一本书，书名为《" + smTable.objects.get(isbn=isbn).sm + "》，仅此凭证"
+            )
+            result[0].delete()  # 删除预约
+            context['msg'] = "借阅成功（已预约）！（图书id：" + str(item.tsid.tsid) + "）"
+            return render(request, 'gly_js.html', context=context)
+        else:  # 未预约直接借书（添加借书信息、修改图书状态）
+            result = tsTable.objects.filter(isbn_id=isbn, zt='未借出')
+            if not result.exists():
+                context['msg'] = "该图书已全部被借出或预约，无法借阅！"
+                return render(request, 'gly_js.html', context=context)
+            result = tsTable.objects.get(isbn_id=isbn, zt='未借出')
+            result.zt = '已借出'
+            result.save()  # 修改图书状态
+            print(result.zt)
+            item = jsTable(
+                dzid_id=dzid,
+                tsid=result,
+                jysj=timezone.now(),
+                yhsj=timezone.now() + timezone.timedelta(days=60)
+            )
+            item.save()  # 添加借书信息
+            mail(
+                "借书凭证",
+                "您已借阅了一本书，书名为《" + smTable.objects.get(isbn=isbn).sm + "》，仅此凭证"
+            )
+            context['msg'] = "借阅成功（未预约）！（图书id：" + str(result.tsid) + "）"
+            return render(request, 'gly_js.html', context=context)
 
 
 def gly_hs(request):  # 管理员还书
@@ -345,7 +415,60 @@ def gly_hs(request):  # 管理员还书
         return HttpResponseRedirect("/")
     context = dict()
     context['xm'] = request.session.get('xm')
-    return render(request, 'gly_hs.html', context=context)
+    if request.method == 'GET':
+        return render(request, 'gly_hs.html', context=context)
+    else:
+        context['dzid'] = dzid = request.POST.get('dzid')
+        context['tsid'] = tsid = request.POST.get('tsid')
+        context['msg'] = "未知错误，请重试"
+        if not dzid or not tsid:
+            context['msg'] = "请填写完整的读者id和ISBN号"
+            return render(request, 'gly_hs.html', context=context)
+        result = dzTable.objects.filter(dzid=dzid)
+        if not result.exists():
+            context['msg'] = "读者id不存在！"
+            return render(request, 'gly_hs.html', context=context)
+        result = tsTable.objects.filter(tsid=tsid)
+        if not result.exists():
+            context['msg'] = "不存在该图书id！"
+            return render(request, 'gly_hs.html', context=context)
+        result = jsTable.objects.filter(dzid_id=dzid, tsid_id=tsid, ghsj=None)  # 未归还的借书记录
+        if not result.exists():
+            context['msg'] = "该读者未借阅该图书！"
+            return render(request, 'gly_hs.html', context=context)
+        result = result[0]
+        if timezone.now() - result.yhsj > timezone.timedelta(days=0):  # 逾期未还
+            print("逾期未还")
+            context['msg'] = "图书逾期归还，应该缴纳费用" + str((result.yhsj - timezone.now()).days) + "元"
+        else:  # 期限内归还
+            print("期限内归还")
+            context['msg'] = "图书期限内归还"
+        isbn = tsTable.objects.get(tsid=tsid).isbn_id
+        yy = yyTable.objects.filter(isbn_id=isbn).filter(~Q(tsid_id=None))
+        ts = tsTable.objects.get(tsid=tsid)
+        if yy.exists():  # 有人预约此书却没有预约到
+            yy = yy[0]
+            yy.tsid_id = tsid
+            yy.save()  # 更新预约表
+            mail(
+                "预约借书通知",
+                "您预约的图书《" + smTable.objects.get(isbn=isbn).sm + "》已经为您库存，请及时借阅！"
+            )
+            print(yy.tsid_id)
+            ts.zt = '已预约'
+            ts.save()  # 更新图书为已预约
+            print(ts.zt)
+        else:  # 无人未预约到此书
+            ts.zt = '未借出'
+            ts.save()
+            print(ts.zt)
+        result.ghsj = timezone.now()  # 归还此书
+        result.save()
+        mail(
+            "图书归还通知",
+            "您借阅的图书《" + smTable.objects.get(isbn=isbn).sm + "》已经归还成功！"
+        )
+        return render(request, 'gly_hs.html', context=context)
 
 
 def gly_rk(request):  # 管理员入库
@@ -357,8 +480,8 @@ def gly_rk(request):  # 管理员入库
         return render(request, 'gly_rk.html', context=context)
     else:
         context['isbn'] = isbn = request.POST.get('isbn')  # ISBN
-        context['rksl'] = rksl = int(request.POST.get('rksl'))  # 入库数量
-        context['rkhzt'] = rkhzt = request.POST.get('rkhzt')  # 入库后状态（未借出、不外借）
+        context['rksl'] = rksl = request.POST.get('rksl')  # 入库数量
+        context['rkhzt'] = rkhzt = request.POST.get('rkhzt')  # 入库后状态（流通室、阅览室）
         context['sm'] = sm = request.POST.get('sm')  # 书名（新书录入）
         context['zz'] = zz = request.POST.get('zz')  # 作者（新书录入）
         context['cbs'] = cbs = request.POST.get('cbs')  # 出版社（新书录入）
@@ -368,8 +491,8 @@ def gly_rk(request):  # 管理员入库
         if not isbn or not rksl or not rkhzt:
             context['msg'] = "请填写ISBN号、入库数量和入库后状态"
             return render(request, 'gly_rk.html', context=context)
-        if rkhzt != '未借出' and rkhzt != '不外借':
-            context['msg'] = "入库后状态必须为未借出或不外借"
+        if rkhzt != '流通室' and rkhzt != '阅览室':
+            context['msg'] = "入库后状态必须为流通室或阅览室"
             return render(request, 'gly_rk.html', context=context)
         result = smTable.objects.filter(isbn=isbn)
         if result.exists():  # 旧书录入
@@ -398,8 +521,8 @@ def gly_rk(request):  # 管理员入库
                 if not result.exists():
                     context['msg'] = "检测到旧书录入，且册数不匹配，请检查"
                     return render(request, 'gly_rk.html', context=context)
-            if rkhzt == '未借出':
-                for _ in range(rksl):
+            if rkhzt == '流通室':
+                for _ in range(int(rksl)):
                     item = tsTable(
                         isbn_id=result[0].isbn,
                         cfwz='图书流通室',
@@ -407,8 +530,8 @@ def gly_rk(request):  # 管理员入库
                         jbr_id=request.session.get('id')
                     )
                     item.save()
-            else:  # 不外借
-                for _ in range(rksl):
+            else:  # 阅览室不外借
+                for _ in range(int(rksl)):
                     item = tsTable(
                         isbn_id=result[0].isbn,
                         cfwz='图书阅览室',
@@ -431,8 +554,8 @@ def gly_rk(request):  # 管理员入库
                 jbr_id=request.session.get('id'),
             )
             item.save()
-            if rkhzt == '未借出':
-                for _ in range(rksl):
+            if rkhzt == '流通室':
+                for _ in range(int(rksl)):
                     item = tsTable(
                         isbn_id=isbn,
                         cfwz='图书流通室',
@@ -440,8 +563,8 @@ def gly_rk(request):  # 管理员入库
                         jbr_id=request.session.get('id')
                     )
                     item.save()
-            else:  # 不外借
-                for _ in range(rksl):
+            else:  # 阅览室不外借
+                for _ in range(int(rksl)):
                     item = tsTable(
                         isbn_id=isbn,
                         cfwz='图书阅览室',
@@ -458,4 +581,94 @@ def gly_ck(request):  # 管理员出库
         return HttpResponseRedirect("/")
     context = dict()
     context['xm'] = request.session.get('xm')
-    return render(request, 'gly_ck.html', context=context)
+    if request.method == 'GET':
+        return render(request, 'gly_ck.html', context=context)
+    else:
+        context['isbn'] = isbn = request.POST.get('isbn')  # ISBN
+        context['cksl'] = cksl = request.POST.get('cksl')  # 出库数量
+        context['ckyx'] = ckyx = request.POST.get('ckyx')  # 出库优先（未借出、不外借）
+        context['msg'] = "未知错误，请重试"
+        if not isbn or not cksl or not ckyx:
+            context['msg'] = "请填写ISBN号、入出库数量和优先出库位置"
+            return render(request, 'gly_ck.html', context=context)
+        if ckyx != '流通室' and ckyx != '阅览室':
+            context['msg'] = "优先出库位置必须为流通室或阅览室"
+            return render(request, 'gly_ck.html', context=context)
+        result = smTable.objects.filter(isbn=isbn)
+        if not result.exists():
+            context['msg'] = "ISBN录入有误，请检查"
+            return render(request, 'gly_ck.html', context=context)
+        wjc = tsTable.objects.filter(isbn_id=isbn, zt='未借出')  # 未借出图书数量
+        bwj = tsTable.objects.filter(isbn_id=isbn, zt='不外借')  # 不外借图书数量
+        yyy = tsTable.objects.filter(isbn_id=isbn, zt='已预约')  # 已预约图书数量
+        ts = tsTable.objects.filter(isbn_id=isbn)  # 所有图书数量
+        cksl = int(cksl)
+        if len(ts) < cksl:
+            context['msg'] = "出库数量超过藏书总数！请检查"
+            return render(request, 'gly_ck.html', context=context)
+        if len(wjc) + len(bwj) + len(yyy) < cksl:
+            context['msg'] = "由于部分书目已被借出，出库失败！"
+            return render(request, 'gly_ck.html', context=context)
+        tsid = []
+        ck = []
+        if ckyx == '流通室':  # 未借出 > 已预约 > 不外借
+            for elem in wjc:
+                if cksl > 0:
+                    tsid.append(elem.tsid)
+                    ck.append(elem)
+                    cksl -= 1
+                else:
+                    break
+            for elem in yyy:
+                if cksl > 0:
+                    tsid.append(elem.tsid)
+                    mail(
+                        "预约失效通知",
+                        "由于管理员出库，您预约的图书《" + smTable.objects.get(isbn=isbn).sm + "》不再存储，预约已经失效。"
+                    )
+                    ck.append(elem)
+                    cksl -= 1
+                else:
+                    break
+            for elem in bwj:
+                if cksl > 0:
+                    tsid.append(elem.tsid)
+                    ck.append(elem)
+                    cksl -= 1
+                else:
+                    break
+            for elem in ck:
+                elem.delete()
+            context['msg'] = "出库成功！"
+            context['tsid'] = tsid
+        else:  # 不外借 > 未借出 > 已预约
+            for elem in bwj:
+                if cksl > 0:
+                    tsid.append(elem.tsid)
+                    ck.append(elem)
+                    cksl -= 1
+                else:
+                    break
+            for elem in wjc:
+                if cksl > 0:
+                    tsid.append(elem.tsid)
+                    ck.append(elem)
+                    cksl -= 1
+                else:
+                    break
+            for elem in yyy:
+                if cksl > 0:
+                    tsid.append(elem.tsid)
+                    mail(
+                        "预约失效通知",
+                        "由于管理员出库，您预约的图书《" + smTable.objects.get(isbn=isbn).sm + "》不再存储，预约已经失效。"
+                    )
+                    ck.append(elem)
+                    cksl -= 1
+                else:
+                    break
+            for elem in ck:
+                elem.delete()
+            context['msg'] = "出库成功！"
+            context['tsid'] = tsid
+        return render(request, 'gly_ck.html', context=context)

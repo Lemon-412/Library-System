@@ -21,6 +21,7 @@
             <thead>
                 <tr>
                     <th> 图书id </th>
+                    <th> 书名 </th>
                     <th> 借阅时间 </th>
                     <th> 应还时间 </th>
                     <th> 归还时间 </th>
@@ -30,6 +31,7 @@
                 {% for elem in grzt %}
                 <tr>
                     <td> {{ elem.tsid }} </td>
+                    <td> {{ elem.sm }} </td>
                     <td> {{ elem.jysj }} </td>
                     <td> {{ elem.yhsj }} </td>
                     <td>

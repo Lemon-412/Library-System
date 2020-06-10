@@ -5,9 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="94a547fd-14ac-4cef-a767-c4a8b5a2d104" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myWEB/templates/dz_smztcx.html" beforeDir="false" afterPath="$PROJECT_DIR$/myWEB/templates/dz_smztcx.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myWEB/templates/gly_smztcx.html" beforeDir="false" afterPath="$PROJECT_DIR$/myWEB/templates/gly_smztcx.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/myWEB/templates/dz_grztcx.html" beforeDir="false" afterPath="$PROJECT_DIR$/myWEB/templates/dz_grztcx.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/myWEB/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/myWEB/views.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -21,8 +19,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/myWEB/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="617">
-              <caret line="44" column="48" selection-start-line="44" selection-start-column="48" selection-end-line="44" selection-end-column="48" />
+            <state relative-caret-position="1320">
+              <caret line="55" lean-forward="true" selection-start-line="55" selection-end-line="55" />
             </state>
           </provider>
         </entry>
@@ -30,11 +28,21 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/myWEB/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="175">
-              <caret line="15" column="32" selection-start-line="15" selection-start-column="32" selection-end-line="15" selection-end-column="32" />
+            <state relative-caret-position="-510">
+              <caret line="530" column="51" lean-forward="true" selection-start-line="530" selection-start-column="51" selection-end-line="530" selection-end-column="51" />
               <folding>
                 <element signature="e#0#45#0" expanded="true" />
+                <element signature="e#16204#18593#0" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/myWEB/templates/dz_grztcx.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="527">
+              <caret line="33" column="35" selection-start-line="33" selection-start-column="35" selection-end-line="33" selection-end-column="35" />
             </state>
           </provider>
         </entry>
@@ -97,7 +105,12 @@
     <findStrings>
       <find>rksl</find>
       <find>exists</find>
+      <find>.get</find>
+      <find>objects.get</find>
+      <find>where</find>
       <find>mail(</find>
+      <find>print(</find>
+      <find>grz</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -114,7 +127,6 @@
         <option value="$PROJECT_DIR$/myWEB/templates/home.html" />
         <option value="$PROJECT_DIR$/myWEB/templates/gly_index.html" />
         <option value="$PROJECT_DIR$/Library/urls.py" />
-        <option value="$PROJECT_DIR$/myWEB/templates/dz_grztcx.html" />
         <option value="$PROJECT_DIR$/myWEB/templates/dz_index.html" />
         <option value="$PROJECT_DIR$/myWEB/templates/gly_rk.html" />
         <option value="$PROJECT_DIR$/myWEB/templates/gly_ck.html" />
@@ -124,6 +136,7 @@
         <option value="$PROJECT_DIR$/myWEB/models.py" />
         <option value="$PROJECT_DIR$/myWEB/templates/dz_smztcx.html" />
         <option value="$PROJECT_DIR$/myWEB/templates/gly_smztcx.html" />
+        <option value="$PROJECT_DIR$/myWEB/templates/dz_grztcx.html" />
         <option value="$PROJECT_DIR$/myWEB/views.py" />
       </list>
     </option>
@@ -246,7 +259,7 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.37125129" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.2647363" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -350,13 +363,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/myWEB/templates/dz_grztcx.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="623">
-          <caret line="49" lean-forward="true" selection-start-line="49" selection-end-line="49" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/myWEB/templates/dz_index.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
@@ -430,13 +436,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/myWEB/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="617">
-          <caret line="44" column="48" selection-start-line="44" selection-start-column="48" selection-end-line="44" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/myWEB/templates/gly_smztcx.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="677">
@@ -451,12 +450,27 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/myWEB/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1320">
+          <caret line="55" lean-forward="true" selection-start-line="55" selection-end-line="55" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/myWEB/templates/dz_grztcx.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="527">
+          <caret line="33" column="35" selection-start-line="33" selection-start-column="35" selection-end-line="33" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/myWEB/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="175">
-          <caret line="15" column="32" selection-start-line="15" selection-start-column="32" selection-end-line="15" selection-end-column="32" />
+        <state relative-caret-position="-510">
+          <caret line="530" column="51" lean-forward="true" selection-start-line="530" selection-start-column="51" selection-end-line="530" selection-end-column="51" />
           <folding>
             <element signature="e#0#45#0" expanded="true" />
+            <element signature="e#16204#18593#0" />
           </folding>
         </state>
       </provider>

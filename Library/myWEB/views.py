@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.hashers import make_password, check_password  # 用户密码管理
 from .models import dzTable, tsglyTable, smTable, tsTable, jsTable, yyTable  # 引入数据库
 
-from django.db.models import Q  # 查询语句不等于
+# from django.db.models import Q  # 查询语句不等于
 
 import smtplib  # 邮件服务
 from email.mime.text import MIMEText  # 邮件服务
@@ -13,19 +13,22 @@ from time import sleep
 from django.utils import timezone  # django带时区管理的时间类
 
 
-def mail(title, content, coding_type='HTML', retry_flag=False):  # 寄送邮件服务
+def mail(title, content, my_user, coding_type='HTML', retry_flag=False):  # 寄送邮件服务
     my_sender = ''  # 发件人邮箱账号
     my_pass = ''  # 发件人邮箱口令
-    my_user = ''  # 收件人邮箱账号
     really_mail = False
-    print('标题：' + title + '\n正文：' + content + '\n')
+    print("\n=================发送邮件====================")
+    print("| 收件人：" + my_user)
+    print("| 标题：" + title)
+    print("| 正文：" + content)
+    print("============================================\n")
     if not really_mail:
         return
     while True:
         try:
             msg = MIMEText(content, coding_type, 'utf-8')
-            msg['From'] = formataddr(['Lemon', my_sender])
-            msg['To'] = formataddr(['Lemon', my_user])
+            msg['From'] = formataddr(['上海大学图书管理系统', my_sender])
+            msg['To'] = formataddr(['用户', my_user])
             msg['Subject'] = title
             server = smtplib.SMTP_SSL('smtp.qq.com', 465)
             server.login(my_sender, my_pass)
@@ -134,6 +137,13 @@ def logout_view(request):  # 读者、管理员退出登录
     return HttpResponseRedirect("/")
 
 
+"""
+登录后的session:
+request.session['login_type']: 读者'dz'  管理员'gly'
+request.session['id']: 读者id  管理员工号 
+request.session['xm']: 读者姓名 管理员姓名
+"""
+
 # =====================读者======================
 
 
@@ -182,6 +192,8 @@ def dz_smztcx(request):  # 读者书目状态查询
                     'kccs': len(tsTable.objects.filter(isbn=elem.isbn)),
                     'bwjcs': len(tsTable.objects.filter(isbn=elem.isbn, zt='不外借')),
                     'wjccs': len(tsTable.objects.filter(isbn=elem.isbn, zt='未借出')),
+                    'yjccs': len(tsTable.objects.filter(isbn=elem.isbn, zt='已借出')),
+                    'yyycs': len(tsTable.objects.filter(isbn=elem.isbn, zt='已预约')),
                 }
             )
         context['msg'] = ''
@@ -202,6 +214,7 @@ def dz_yydj(request):  # 读者预约登记(借不到的书)
                 'ISBN': elem.isbn.isbn,
                 'sm': smTable.objects.get(isbn=elem.isbn.isbn).sm,
                 'yysj': elem.yysj,
+                'tsid': elem.tsid.tsid if elem.tsid else None,
             }
         )
     context['yydj'] = yydj
@@ -236,7 +249,8 @@ def dz_yydj(request):  # 读者预约登记(借不到的书)
         mail(
             "预约成功通知函",
             "您已成功预约一本书, 书名为《" + str(smTable.objects.get(isbn=isbn).sm) +
-            "》。预约时间：" + str(timezone.now())
+            "》。预约时间：" + str(timezone.now()),
+            dzTable.objects.get(dzid=request.session.get('id')).email
         )
         yydj = []
         result = yyTable.objects.filter(dzid_id=request.session.get('id', None))
@@ -258,11 +272,11 @@ def dz_grztcx(request):  # 读者个人(借书)状态查询
         return HttpResponseRedirect("/")
     context = dict()
     context['xm'] = request.session.get('xm', None)
-    result = jsTable.objects.filter(dzid=request.session.get(id))
+    result = jsTable.objects.filter(dzid_id=request.session.get('id'))
     grzt = []
     for elem in result:
-        grzt.append({'tsid': elem.tsid, 'jysj': elem.jysj, 'yhsj': elem.yhsj, 'ghsj': elem.ghsj})
-    context['smzt'] = grzt
+        grzt.append({'tsid': elem.tsid.tsid, 'jysj': elem.jysj, 'yhsj': elem.yhsj, 'ghsj': elem.ghsj})
+    context['grzt'] = grzt
     return render(request, 'dz_grztcx.html', context=context)
 
 
@@ -281,7 +295,8 @@ def gly_index(request):  # 管理员首页
         for elem in result:
             mail(
                 "预约过期通知",
-                "很遗憾，您预约的书《" + str(smTable.objects.get(isbn=elem.isbn.isbn).sm) + "》预约时间已经过期，您可以再次尝试预约"
+                "很遗憾，您预约的书《" + str(smTable.objects.get(isbn=elem.isbn.isbn).sm) + "》预约时间已经过期，您可以再次尝试预约",
+                dzTable.objects.get(dzid=elem.dzid_id).email
             )
             if elem.tsid:  # 已经被成功预约，清除预约状态
                 ts = elem.tsid
@@ -294,7 +309,8 @@ def gly_index(request):  # 管理员首页
         for elem in result:
             mail(
                 "借书归还通知",
-                "您借阅的书《" + str(smTable.objects.get(tsid=elem.tsid.tsid).sm) + "》即将逾期归还，请注意及时还书"
+                "您借阅的书《" + str(smTable.objects.get(tsid=elem.tsid.tsid).sm) + "》即将逾期归还，请注意及时还书",
+                dzTable.objects.get(dzid=elem.dzid_id).email
             )
         context['msg2'] = "提示" + str(len(result)) + "份逾期归还信息。"
         return render(request, 'gly_index.html', context=context)
@@ -334,6 +350,8 @@ def gly_smztcx(request):  # 管理员书目状态查询
                     'kccs': len(tsTable.objects.filter(isbn=elem.isbn)),
                     'bwjcs': len(tsTable.objects.filter(isbn=elem.isbn, zt='不外借')),
                     'wjccs': len(tsTable.objects.filter(isbn=elem.isbn, zt='未借出')),
+                    'yjccs': len(tsTable.objects.filter(isbn=elem.isbn, zt='已借出')),
+                    'yyycs': len(tsTable.objects.filter(isbn=elem.isbn, zt='已预约')),
                 }
             )
         context['msg'] = ''
@@ -374,14 +392,15 @@ def gly_js(request):  # 管理员借书
             ts.save()  # 修改图书状态
             item = jsTable(
                 dzid_id=dzid,
-                tsid=result[0],
+                tsid=result[0].tsid,
                 jysj=timezone.now(),
                 yhsj=timezone.now() + timezone.timedelta(days=60)
             )
             item.save()  # 添加借书信息
             mail(
                 "借书凭证",
-                "您已借阅了一本书，书名为《" + smTable.objects.get(isbn=isbn).sm + "》，仅此凭证"
+                "您已借阅了一本书，书名为《" + smTable.objects.get(isbn=isbn).sm + "》，仅此凭证",
+                dzTable.objects.get(dzid=dzid).email
             )
             result[0].delete()  # 删除预约
             context['msg'] = "借阅成功（已预约）！（图书id：" + str(item.tsid.tsid) + "）"
@@ -404,7 +423,8 @@ def gly_js(request):  # 管理员借书
             item.save()  # 添加借书信息
             mail(
                 "借书凭证",
-                "您已借阅了一本书，书名为《" + smTable.objects.get(isbn=isbn).sm + "》，仅此凭证"
+                "您已借阅了一本书，书名为《" + smTable.objects.get(isbn=isbn).sm + "》，仅此凭证",
+                dzTable.objects.get(dzid=dzid).email
             )
             context['msg'] = "借阅成功（未预约）！（图书id：" + str(result.tsid) + "）"
             return render(request, 'gly_js.html', context=context)
@@ -444,21 +464,24 @@ def gly_hs(request):  # 管理员还书
             print("期限内归还")
             context['msg'] = "图书期限内归还"
         isbn = tsTable.objects.get(tsid=tsid).isbn_id
-        yy = yyTable.objects.filter(isbn_id=isbn).filter(~Q(tsid_id=None))
+        yy = yyTable.objects.filter(isbn_id=isbn, tsid=None)
         ts = tsTable.objects.get(tsid=tsid)
         if yy.exists():  # 有人预约此书却没有预约到
+            print('有人预约此书却没有预约到')
             yy = yy[0]
             yy.tsid_id = tsid
             yy.save()  # 更新预约表
             mail(
                 "预约借书通知",
-                "您预约的图书《" + smTable.objects.get(isbn=isbn).sm + "》已经为您库存，请及时借阅！"
+                "您预约的图书《" + smTable.objects.get(isbn=isbn).sm + "》已经为您库存，请及时借阅！",
+                dzTable.objects.get(dzid=yy.dzid_id).email
             )
             print(yy.tsid_id)
             ts.zt = '已预约'
             ts.save()  # 更新图书为已预约
             print(ts.zt)
         else:  # 无人未预约到此书
+            print('无人预约此书却没有预约到')
             ts.zt = '未借出'
             ts.save()
             print(ts.zt)
@@ -466,7 +489,8 @@ def gly_hs(request):  # 管理员还书
         result.save()
         mail(
             "图书归还通知",
-            "您借阅的图书《" + smTable.objects.get(isbn=isbn).sm + "》已经归还成功！"
+            "您借阅的图书《" + smTable.objects.get(isbn=isbn).sm + "》已经归还成功！",
+            dzTable.objects.get(dzid=dzid).email
         )
         return render(request, 'gly_hs.html', context=context)
 
@@ -521,15 +545,33 @@ def gly_rk(request):  # 管理员入库
                 if not result.exists():
                     context['msg'] = "检测到旧书录入，且册数不匹配，请检查"
                     return render(request, 'gly_rk.html', context=context)
-            if rkhzt == '流通室':
+            if rkhzt == '流通室':  # 注意先检查是否有预约
                 for _ in range(int(rksl)):
-                    item = tsTable(
-                        isbn_id=result[0].isbn,
-                        cfwz='图书流通室',
-                        zt='未借出',
-                        jbr_id=request.session.get('id')
-                    )
-                    item.save()
+                    yy = yyTable.objects.filter(isbn_id=isbn, tsid=None)
+                    if yy.exists():  # 归入预约
+                        item = tsTable(
+                            isbn_id=isbn,
+                            cfwz='图书流通室',
+                            zt='已预约',
+                            jbr_id=request.session.get('id')
+                        )
+                        item.save()
+                        yy = yy[0]
+                        yy.tsid_id = item.tsid
+                        yy.save()  # 更新预约表
+                        mail(
+                            "预约借书通知",
+                            "您预约的图书《" + smTable.objects.get(isbn=isbn).sm + "》已经为您库存，请及时借阅！",
+                            dzTable.objects.get(dzid=yy.dzid_id).email
+                        )
+                    else:
+                        item = tsTable(
+                            isbn_id=isbn,
+                            cfwz='图书流通室',
+                            zt='未借出',
+                            jbr_id=request.session.get('id')
+                        )
+                        item.save()
             else:  # 阅览室不外借
                 for _ in range(int(rksl)):
                     item = tsTable(
@@ -554,15 +596,33 @@ def gly_rk(request):  # 管理员入库
                 jbr_id=request.session.get('id'),
             )
             item.save()
-            if rkhzt == '流通室':
+            if rkhzt == '流通室':  # 注意先检查是否有预约
                 for _ in range(int(rksl)):
-                    item = tsTable(
-                        isbn_id=isbn,
-                        cfwz='图书流通室',
-                        zt='未借出',
-                        jbr_id=request.session.get('id')
-                    )
-                    item.save()
+                    yy = yyTable.objects.filter(isbn_id=isbn, tsid=None)
+                    if yy.exists():  # 归入预约
+                        item = tsTable(
+                            isbn_id=isbn,
+                            cfwz='图书流通室',
+                            zt='已预约',
+                            jbr_id=request.session.get('id')
+                        )
+                        item.save()
+                        yy = yy[0]
+                        yy.tsid_id = item.tsid
+                        yy.save()  # 更新预约表
+                        mail(
+                            "预约借书通知",
+                            "您预约的图书《" + smTable.objects.get(isbn=isbn).sm + "》已经为您库存，请及时借阅！",
+                            dzTable.objects.get(dzid=yy.dzid_id).email
+                        )
+                    else:
+                        item = tsTable(
+                            isbn_id=isbn,
+                            cfwz='图书流通室',
+                            zt='未借出',
+                            jbr_id=request.session.get('id')
+                        )
+                        item.save()
             else:  # 阅览室不外借
                 for _ in range(int(rksl)):
                     item = tsTable(
@@ -624,7 +684,8 @@ def gly_ck(request):  # 管理员出库
                     tsid.append(elem.tsid)
                     mail(
                         "预约失效通知",
-                        "由于管理员出库，您预约的图书《" + smTable.objects.get(isbn=isbn).sm + "》不再存储，预约已经失效。"
+                        "由于管理员出库，您预约的图书《" + smTable.objects.get(isbn=isbn).sm + "》不再存储，预约已经失效。",
+                        dzTable.objects.get(dzid=elem.dzid_id).email
                     )
                     ck.append(elem)
                     cksl -= 1
@@ -661,7 +722,8 @@ def gly_ck(request):  # 管理员出库
                     tsid.append(elem.tsid)
                     mail(
                         "预约失效通知",
-                        "由于管理员出库，您预约的图书《" + smTable.objects.get(isbn=isbn).sm + "》不再存储，预约已经失效。"
+                        "由于管理员出库，您预约的图书《" + smTable.objects.get(isbn=isbn).sm + "》不再存储，预约已经失效。",
+                        dzTable.objects.get(dzid=elem.dzid_id).email
                     )
                     ck.append(elem)
                     cksl -= 1

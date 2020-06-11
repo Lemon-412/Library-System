@@ -104,6 +104,12 @@ def register(request):  # 新读者注册账户
         mm = request.POST.get("mm")  # 密码
         mmqr = request.POST.get("mmqr")  # 密码确认
         context["msg"] = "未知错误，请重试"
+        if not (xm and dh and yx and mm and mmqr):
+            context['msg'] = "请填写完整的姓名、电话、邮箱和密码"
+            return render(request, 'register.html', context=context)
+        if len(dh) != 11 or not dh.isdecimal:
+            context["msg"] = "电话输入有误，请检查"
+            return render(request, 'register.html', context=context)
         if mm != mmqr:
             context["msg"] = "两次密码输入不一致，请检查"
             return render(request, 'register.html', context=context)

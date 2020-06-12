@@ -9,7 +9,7 @@ import smtplib  # 邮件服务
 from email.mime.text import MIMEText  # 邮件服务
 from email.utils import formataddr  # 邮件服务
 
-from time import sleep
+from time import sleep  # 发邮件睡觉觉
 from django.utils import timezone  # django带时区管理的时间类
 
 
@@ -132,6 +132,11 @@ def register(request):  # 新读者注册账户
         item.save()
         result = dzTable.objects.get(email=yx)
         context["msg"] = "注册成功，读者id为：" + str(result.dzid).zfill(5)
+        mail(
+            "图书管理系统注册备忘",
+            "您已完成注册，用户名：" + xm + "，系统为您分配的读者ID为：" + str(result.dzid).zfill(5),
+            yx,
+        )
         return render(request, 'register.html', context=context)
     else:
         return render(request, 'register.html', context=context)
@@ -168,7 +173,7 @@ def dz_smztcx(request):  # 读者书目状态查询
     context['xm'] = request.session.get('xm', None)
     if request.method == 'GET':
         return render(request, 'dz_smztcx.html', context=context)
-    else:
+    else:  # POST
         context['sm'] = sm = request.POST.get('sm')  # 书名
         context['zz'] = zz = request.POST.get('zz')  # 作者
         context['isbn'] = isbn = request.POST.get('isbn')  # ISBN
@@ -394,7 +399,7 @@ def gly_js(request):  # 管理员借书
         if not result.exists():
             context['msg'] = "ISBN号填写错误，不存在该类书籍！"
             return render(request, 'gly_js.html', context=context)
-        result = jsTable.objects.filter(dzid_id=dzid)
+        result = jsTable.objects.filter(dzid_id=dzid, ghsj=None)
         if len(result) >= 10:
             context['msg'] = "该读者借阅书籍数已经达到上限！"
             return render(request, 'gly_js.html', context=context)
@@ -470,16 +475,13 @@ def gly_hs(request):  # 管理员还书
             return render(request, 'gly_hs.html', context=context)
         result = result[0]
         if timezone.now() - result.yhsj > timezone.timedelta(days=0):  # 逾期未还
-            print("逾期未还")
             context['msg'] = "图书逾期归还，应该缴纳费用" + str((timezone.now() - result.yhsj).days * 0.1) + "元"
         else:  # 期限内归还
-            print("期限内归还")
             context['msg'] = "图书期限内归还"
         isbn = tsTable.objects.get(tsid=tsid).isbn_id
         yy = yyTable.objects.filter(isbn_id=isbn, tsid=None)
         ts = tsTable.objects.get(tsid=tsid)
         if yy.exists():  # 有人预约此书却没有预约到
-            print('有人预约此书')
             yy = yy[0]
             yy.tsid_id = tsid
             yy.save()  # 更新预约表
@@ -488,11 +490,9 @@ def gly_hs(request):  # 管理员还书
                 "您预约的图书《" + smTable.objects.get(isbn=isbn).sm + "》已经为您库存，请及时借阅！",
                 yy.dzid.email
             )
-            print(yy.tsid_id)
             ts.zt = '已预约'
             ts.save()  # 更新图书为已预约
         else:  # 无人未预约到此书
-            print('无人预约此书')
             ts.zt = '未借出'
             ts.save()
         result.ghsj = timezone.now()  # 归还此书
@@ -520,7 +520,7 @@ def gly_rk(request):  # 管理员入库
         context['zz'] = zz = request.POST.get('zz')  # 作者（新书录入）
         context['cbs'] = cbs = request.POST.get('cbs')  # 出版社（新书录入）
         context['cbny'] = cbny = request.POST.get('cbny')  # 出版年月（新书录入）
-        context['cs'] = cs = request.POST.get('cs')  # 册数（新书录入）
+        # context['cs'] = cs = request.POST.get('cs')  # 册数（新书录入）
         context['msg'] = "未知错误，请重试"
         if not isbn or not rksl or not rkhzt:
             context['msg'] = "请填写ISBN号、入库数量和入库后状态"
@@ -550,11 +550,11 @@ def gly_rk(request):  # 管理员入库
                 if not result.exists():
                     context['msg'] = "检测到旧书录入，且出版年月不匹配，请检查"
                     return render(request, 'gly_rk.html', context=context)
-            if cs:
-                result = result.filter(cs=cs)
-                if not result.exists():
-                    context['msg'] = "检测到旧书录入，且册数不匹配，请检查"
-                    return render(request, 'gly_rk.html', context=context)
+            # if cs:
+            #     result = result.filter(cs=cs)
+            #     if not result.exists():
+            #         context['msg'] = "检测到旧书录入，且册数不匹配，请检查"
+            #         return render(request, 'gly_rk.html', context=context)
             if rkhzt == '流通室':  # 注意先检查是否有预约
                 for _ in range(int(rksl)):
                     yy = yyTable.objects.filter(isbn_id=isbn, tsid=None)
@@ -593,7 +593,7 @@ def gly_rk(request):  # 管理员入库
                     item.save()
             context['msg'] = "旧书入库成功！"
         else:   # 新书录入
-            if not (sm and zz and cbs and cbny and cs):
+            if not (sm and zz and cbs and cbny):
                 context['msg'] = "检测到新书录入，请完整填写信息"
                 return render(request, 'gly_rk.html', context=context)
             item = smTable(
@@ -602,7 +602,6 @@ def gly_rk(request):  # 管理员入库
                 zz=zz,
                 cbs=cbs,
                 cbny=cbny,
-                cs=cs,
                 jbr_id=request.session.get('id'),
             )
             item.save()

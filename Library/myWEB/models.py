@@ -1,5 +1,4 @@
 from django.db import models
-# Create your models here.
 
 
 class dzTable(models.Model):  # 读者信息
@@ -22,7 +21,7 @@ class smTable(models.Model):  # 书目信息
     zz = models.CharField(max_length=50)  # 作者
     cbs = models.CharField(max_length=50)  # 出版商
     cbny = models.DateTimeField()  # 出版年月
-    cs = models.IntegerField()   # 册数
+    # cs = models.IntegerField()   # 册数
     jbr = models.ForeignKey(tsglyTable, on_delete=models.CASCADE)  # 经办人
 
 
@@ -52,4 +51,4 @@ class yyTable(models.Model):  # 预约信息
     yysj = models.DateTimeField()
 
     class Meta:
-        unique_together = ("dzid", "isbn")
+        unique_together = ("dzid", "isbn", "yysj")

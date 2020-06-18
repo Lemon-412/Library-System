@@ -5,19 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="94a547fd-14ac-4cef-a767-c4a8b5a2d104" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myWEB/templates/dz_grztcx.html" beforeDir="false" afterPath="$PROJECT_DIR$/myWEB/templates/dz_grztcx.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myWEB/templates/dz_index.html" beforeDir="false" afterPath="$PROJECT_DIR$/myWEB/templates/dz_index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/myWEB/templates/dz_smztcx.html" beforeDir="false" afterPath="$PROJECT_DIR$/myWEB/templates/dz_smztcx.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myWEB/templates/dz_yydj.html" beforeDir="false" afterPath="$PROJECT_DIR$/myWEB/templates/dz_yydj.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myWEB/templates/gly_ck.html" beforeDir="false" afterPath="$PROJECT_DIR$/myWEB/templates/gly_ck.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myWEB/templates/gly_hs.html" beforeDir="false" afterPath="$PROJECT_DIR$/myWEB/templates/gly_hs.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myWEB/templates/gly_index.html" beforeDir="false" afterPath="$PROJECT_DIR$/myWEB/templates/gly_index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myWEB/templates/gly_js.html" beforeDir="false" afterPath="$PROJECT_DIR$/myWEB/templates/gly_js.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myWEB/templates/gly_rk.html" beforeDir="false" afterPath="$PROJECT_DIR$/myWEB/templates/gly_rk.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myWEB/templates/gly_smztcx.html" beforeDir="false" afterPath="$PROJECT_DIR$/myWEB/templates/gly_smztcx.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myWEB/templates/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/myWEB/templates/home.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myWEB/templates/register.html" beforeDir="false" afterPath="$PROJECT_DIR$/myWEB/templates/register.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/myWEB/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/myWEB/views.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -32,7 +20,7 @@
         <entry file="file://$PROJECT_DIR$/myWEB/models.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="192">
-              <caret line="8" column="28" lean-forward="true" selection-start-line="8" selection-start-column="28" selection-end-line="8" selection-end-column="28" />
+              <caret line="8" column="28" selection-start-line="8" selection-start-column="28" selection-end-line="8" selection-end-column="28" />
             </state>
           </provider>
         </entry>
@@ -40,7 +28,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Library/urls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="578">
+            <state relative-caret-position="624">
               <caret line="28" column="38" selection-start-line="28" selection-start-column="38" selection-end-line="28" selection-end-column="38" />
               <folding>
                 <element signature="e#631#663#0" expanded="true" />
@@ -49,29 +37,32 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/myWEB/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="656">
-              <caret line="616" column="38" selection-start-line="616" selection-start-column="38" selection-end-line="616" selection-end-column="38" />
+            <state relative-caret-position="631">
+              <caret line="747" column="27" lean-forward="true" selection-start-line="747" selection-start-column="27" selection-end-line="747" selection-end-column="27" />
               <folding>
                 <element signature="e#0#45#0" expanded="true" />
-                <element signature="e#3761#5682#0" />
-                <element signature="e#6069#6289#0" />
-                <element signature="e#6332#8218#0" />
-                <element signature="e#10918#11525#0" />
-                <element signature="e#11616#12794#0" />
-                <element signature="e#12839#14553#0" />
+                <element signature="e#6105#6325#0" />
+                <element signature="e#6368#8254#0" />
+                <element signature="e#8300#10907#0" />
+                <element signature="e#10954#11561#0" />
+                <element signature="e#11652#12830#0" />
+                <element signature="e#12875#14589#0" />
+                <element signature="e#14626#17736#0" />
+                <element signature="e#17773#20273#0" />
+                <element signature="e#20310#26369#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/myWEB/templates/gly_ck.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="377">
-              <caret line="117" column="10" lean-forward="true" selection-start-line="117" selection-start-column="10" selection-end-line="117" selection-end-column="10" />
+            <state relative-caret-position="2808">
+              <caret line="117" column="10" selection-start-line="117" selection-start-column="10" selection-end-line="117" selection-end-column="10" />
             </state>
           </provider>
         </entry>
@@ -79,8 +70,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/myWEB/templates/dz_smztcx.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3024">
-              <caret line="126" column="51" lean-forward="true" selection-start-line="126" selection-start-column="51" selection-end-line="126" selection-end-column="51" />
+            <state relative-caret-position="559">
+              <caret line="117" column="35" lean-forward="true" selection-start-line="117" selection-start-column="35" selection-end-line="117" selection-end-column="35" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/myWEB/templates/gly_smztcx.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="295">
+              <caret line="104" column="12" selection-start-line="104" selection-start-column="12" selection-end-line="111" selection-end-column="22" />
             </state>
           </provider>
         </entry>
@@ -88,8 +88,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/myWEB/templates/dz_yydj.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="312">
-              <caret line="100" column="50" lean-forward="true" selection-start-line="100" selection-start-column="50" selection-end-line="100" selection-end-column="50" />
+            <state relative-caret-position="2400">
+              <caret line="100" column="50" selection-start-line="100" selection-start-column="50" selection-end-line="100" selection-end-column="50" />
             </state>
           </provider>
         </entry>
@@ -151,9 +151,9 @@
         <option value="$PROJECT_DIR$/myWEB/templates/gly_rk.html" />
         <option value="$PROJECT_DIR$/myWEB/models.py" />
         <option value="$PROJECT_DIR$/myWEB/templates/dz_yydj.html" />
+        <option value="$PROJECT_DIR$/myWEB/templates/gly_ck.html" />
         <option value="$PROJECT_DIR$/myWEB/templates/dz_smztcx.html" />
         <option value="$PROJECT_DIR$/myWEB/views.py" />
-        <option value="$PROJECT_DIR$/myWEB/templates/gly_ck.html" />
       </list>
     </option>
   </component>
@@ -169,7 +169,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -197,6 +196,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -266,12 +266,12 @@
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.12012645" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.12012645" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.048677247" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.39259258" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -410,13 +410,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/myWEB/templates/gly_smztcx.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="175">
-          <caret line="63" column="40" lean-forward="true" selection-start-line="63" selection-start-column="40" selection-end-line="63" selection-end-column="40" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/myWEB/templates/gly_rk.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="751">
@@ -431,37 +424,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/myWEB/templates/dz_yydj.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="312">
-          <caret line="100" column="50" lean-forward="true" selection-start-line="100" selection-start-column="50" selection-end-line="100" selection-end-column="50" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/myWEB/templates/dz_smztcx.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3024">
-          <caret line="126" column="51" lean-forward="true" selection-start-line="126" selection-start-column="51" selection-end-line="126" selection-end-column="51" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Library/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="578">
-          <caret line="28" column="38" selection-start-line="28" selection-start-column="38" selection-end-line="28" selection-end-column="38" />
-          <folding>
-            <element signature="e#631#663#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/myWEB/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="8" column="28" lean-forward="true" selection-start-line="8" selection-start-column="28" selection-end-line="8" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/myWEB/templates/gly_hs.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="418">
@@ -469,26 +431,67 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/myWEB/views.py">
+    <entry file="file://$PROJECT_DIR$/myWEB/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="656">
-          <caret line="616" column="38" selection-start-line="616" selection-start-column="38" selection-end-line="616" selection-end-column="38" />
+        <state relative-caret-position="192">
+          <caret line="8" column="28" selection-start-line="8" selection-start-column="28" selection-end-line="8" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Library/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="624">
+          <caret line="28" column="38" selection-start-line="28" selection-start-column="38" selection-end-line="28" selection-end-column="38" />
           <folding>
-            <element signature="e#0#45#0" expanded="true" />
-            <element signature="e#3761#5682#0" />
-            <element signature="e#6069#6289#0" />
-            <element signature="e#6332#8218#0" />
-            <element signature="e#10918#11525#0" />
-            <element signature="e#11616#12794#0" />
-            <element signature="e#12839#14553#0" />
+            <element signature="e#631#663#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/myWEB/templates/dz_yydj.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2400">
+          <caret line="100" column="50" selection-start-line="100" selection-start-column="50" selection-end-line="100" selection-end-column="50" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/myWEB/templates/gly_ck.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="377">
-          <caret line="117" column="10" lean-forward="true" selection-start-line="117" selection-start-column="10" selection-end-line="117" selection-end-column="10" />
+        <state relative-caret-position="2808">
+          <caret line="117" column="10" selection-start-line="117" selection-start-column="10" selection-end-line="117" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/myWEB/templates/gly_smztcx.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="295">
+          <caret line="104" column="12" selection-start-line="104" selection-start-column="12" selection-end-line="111" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/myWEB/templates/dz_smztcx.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="559">
+          <caret line="117" column="35" lean-forward="true" selection-start-line="117" selection-start-column="35" selection-end-line="117" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/myWEB/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="631">
+          <caret line="747" column="27" lean-forward="true" selection-start-line="747" selection-start-column="27" selection-end-line="747" selection-end-column="27" />
+          <folding>
+            <element signature="e#0#45#0" expanded="true" />
+            <element signature="e#6105#6325#0" />
+            <element signature="e#6368#8254#0" />
+            <element signature="e#8300#10907#0" />
+            <element signature="e#10954#11561#0" />
+            <element signature="e#11652#12830#0" />
+            <element signature="e#12875#14589#0" />
+            <element signature="e#14626#17736#0" />
+            <element signature="e#17773#20273#0" />
+            <element signature="e#20310#26369#0" />
+          </folding>
         </state>
       </provider>
     </entry>

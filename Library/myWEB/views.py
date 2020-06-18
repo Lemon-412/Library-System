@@ -700,7 +700,8 @@ def gly_ck(request):  # 管理员出库
                     mail(
                         "预约失效通知",
                         "由于管理员出库，您预约的图书《" + smTable.objects.get(isbn=isbn).sm + "》不再存储，预约已经失效。",
-                        elem.dzid.email
+                        yyTable.objects.get(tsid=elem.tsid).dzid.email,
+                        # elem.dzid.email
                     )
                     ck.append(elem)
                     cksl -= 1
@@ -738,7 +739,7 @@ def gly_ck(request):  # 管理员出库
                     mail(
                         "预约失效通知",
                         "由于管理员出库，您预约的图书《" + smTable.objects.get(isbn=isbn).sm + "》不再存储，预约已经失效。",
-                        elem.dzid.email
+                        yyTable.objects.get(tsid=elem.tsid).dzid.email,
                     )
                     ck.append(elem)
                     cksl -= 1

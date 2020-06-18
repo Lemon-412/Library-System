@@ -94,10 +94,17 @@
     {% endif %}
 
     {% if request.method == 'POST' %}
-        {% if smzt %}
-        <hr>
-        <br>
-        <h6 class="container-fluid"><b>查询结果:</b></h6>
+        {% if not smzt %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert" style="display: inline-block">
+                未找到匹配信息！
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% else %}
+            <hr>
+            <br>
+            <h6 class="container-fluid"><b>查询结果:</b></h6>
             <table class="table container-fluid">
                 <thead class="thead-light">
                 <tr class="table-primary">

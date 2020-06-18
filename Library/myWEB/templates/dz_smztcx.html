@@ -2,83 +2,148 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link href="../../static/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="../../static/css/dashboard.css" rel="stylesheet">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="../../static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../../static/zico/JS/zico.min.js"></script>
     <title> 读者书目状态查询 </title>
 </head>
 <body>
-    <h1> 图书管理系统 </h1>
-    <h3> 读者书目状态查询 </h3>
-    <h3> 欢迎 {{ xm }}</h3>
-    <a href="/logout_view/"> 退出登录 </a>
-    <br><br>
-    <a href="/dz_smztcx/"> 书目状态查询 </a>
-    <br>
-    <a href="/dz_yydj/"> 预约登记 </a>
-    <br>
-    <a href="/dz_grztcx/"> 个人状态查询 </a>
-    <br><br>
-
-    <form role="form" action="/dz_smztcx/" method="post">
+<nav class="navbar navbar-dark sticky-top flex-md-nowrap p-0 shadow" style="background-color: #29abff;">
+    <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="/dz_index/" style="font-weight: bold;font-size: x-large;">图书管理系统</a>
+    <span style="font-size: medium; color: #ffffff; margin-top: 0px; font-weight: bold;font-size: large;">欢迎 {{ xm }}</span>
+    <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+            <a class="nav-link" href="/logout_view/" style="font-weight: bold;color: #ffffff">退出登录</a>
+        </li>
+    </ul>
+</nav>
+<div class="container-fluid">
+    <div class="row">
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <div class="sidebar-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dz_index/">
+                            <i class="zi zi_service"></i>
+                            <span>读者首页</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/dz_smztcx/">
+                            <i class="zi zi_search"></i>
+                            <span>书目状态查询</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dz_yydj/">
+                            <i class="zi zi_squareDown"></i>
+                            <span>预约登记</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dz_grztcx/">
+                            <i class="zi zi_squareUp"></i>
+                            <span>个人状态查询</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+<main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <h1 class="h2">书目状态查询</h1>
+    </div>
+    <form role="form" action="/dz_smztcx/" method="post" class="container-fluid">
         {% csrf_token %}
-        <div class="form-group">
-            <label for="sm"> 书名 </label>
-            <input name="sm" type="text" class="form-control" id="sm" placeholder="" value="{{ sm }}" autofocus>
+        <div class="form-group row">
+            <label for="sm" class="col-md-1 col-form-label">书名</label>
+            <div class="col-sm-2">
+                <input name="sm" type="text" class="form-control" id="sm" placeholder="" value="{{ sm }}" autofocus>
+            </div>
+            <label for="zz" class="col-md-1 col-form-label"> 作者 </label>
+            <div class="col-sm-2">
+                <input name="zz" type="text" class="form-control" id="zz" placeholder="" value="{{ zz }}" autofocus>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="zz"> 作者 </label>
-            <input name="zz" type="text" class="form-control" id="zz" placeholder="" value="{{ zz }}">
+        <div class="form-group row">
+            <label for="isbn" class="col-md-1 col-form-label"> ISBN号 </label>
+            <div class="col-sm-2">
+                <input name="isbn" type="text" class="form-control" id="isbn" placeholder="" value="{{ isbn }}"
+                       autofocus>
+            </div>
+            <label for="cbs" class="col-md-1 col-form-label"> 出版社 </label>
+            <div class="col-sm-2">
+                <input name="cbs" type="text" class="form-control" id="cbs" placeholder="" value="{{ cbs }}" autofocus>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="isbn"> ISBN号 </label>
-            <input name="isbn" type="text" class="form-control" id="isbn" placeholder="" value="{{ isbn }}">
-        </div>
-        <div class="form-group">
-            <label for="cbs"> 出版社 </label>
-            <input name="cbs" type="text" class="form-control" id="cbs" placeholder="" value="{{ cbs }}">
-        </div>
-        <div class="form-group" style="color: red">{{ msg }}</div>
-        <br>
-        <button> 查询 </button>
+        <button class="btn btn-primary" data-toggle="modal" data-target="#myModal"> 查询</button>
     </form>
+    <br>
+    {% if msg %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="display:inline-flex">
+            {{ msg }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <br>
+    {% endif %}
 
     {% if request.method == 'POST' %}
-        查询结果：
+        {% if smzt %}
+        <hr>
         <br>
-        {% if not smzt %}
-            未找到匹配信息！
-        {% else %}
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th> ISBN号 </th>
-                        <th> 书名 </th>
-                        <th> 作者 </th>
-                        <th> 出版社 </th>
-                        <th> 出版年月 </th>
-                        <th> 库藏册数 </th>
-                        <th> 不外借册数 </th>
-                        <th> 未借出册数 </th>
-                        <th> 已借出册数 </th>
-                        <th> 已预约册数 </th>
-                    </tr>
+        <h6 class="container-fluid"><b>查询结果:</b></h6>
+            <table class="table container-fluid">
+                <thead class="thead-light">
+                <tr class="table-primary">
+                    <th> ISBN号</th>
+                    <th> 书名</th>
+                    <th> 作者</th>
+                    <th> 出版社</th>
+                    <th> 出版年月</th>
+                    <th> 库藏册数</th>
+                    <th> 不外借册数</th>
+                    <th> 未借出册数</th>
+                    <th> 已借出册数</th>
+                    <th> 已预约册数</th>
+                </tr>
                 </thead>
                 <tbody>
-                    {% for elem in smzt %}
-                        <tr>
-                            <td> {{ elem.ISBN }} </td>
-                            <td> {{ elem.sm }} </td>
-                            <td> {{ elem.zz }} </td>
-                            <td> {{ elem.cbs }} </td>
-                            <td> {{ elem.cbny }} </td>
-                            <td> {{ elem.kccs }} </td>
-                            <td> {{ elem.bwjcs }} </td>
-                            <td> {{ elem.wjccs }} </td>
-                            <td> {{ elem.yjccs }} </td>
-                            <td> {{ elem.yyycs }} </td>
-                        </tr>
-                    {% endfor %}
+                {% for elem in smzt %}
+                    <tr>
+                        <td> {{ elem.ISBN }} </td>
+                        <td> {{ elem.sm }} </td>
+                        <td> {{ elem.zz }} </td>
+                        <td> {{ elem.cbs }} </td>
+                        <td> {{ elem.cbny }} </td>
+                        <td> {{ elem.kccs }} </td>
+                        <td> {{ elem.bwjcs }} </td>
+                        <td> {{ elem.wjccs }} </td>
+                        <td> {{ elem.yjccs }} </td>
+                        <td> {{ elem.yyycs }} </td>
+                    </tr>
+                {% endfor %}
                 </tbody>
             </table>
         {% endif %}
     {% endif %}
+</main>
+
 </body>
 </html>
+<style>
+    body {
+        background-image: url("../../static/img/background-o.jpg");
+        background-size: cover;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }
+</style>

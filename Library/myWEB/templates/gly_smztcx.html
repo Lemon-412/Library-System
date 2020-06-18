@@ -2,86 +2,161 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link href="../../static/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="../../static/css/dashboard.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="../../static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../../static/zico/JS/zico.min.js"></script>
+    <script>
+        $(function () {
+            $('#alert').alert()
+        })
+    </script>
     <title> 管理员书目状态查询 </title>
 </head>
 <body>
-    <h1> 图书管理系统 </h1>
-    <h3> 管理员书目状态查询 </h3>
-    <h3> 欢迎 {{ xm }}</h3>
-    <a href="/logout_view/"> 退出登录 </a>
-    <br><br>
-    <a href="/gly_smztcx/"> 书目状态查询 </a>
-    <br>
-    <a href="/gly_js/"> 借书 </a>
-    <br>
-    <a href="/gly_hs/"> 还书 </a>
-    <br>
-    <a href="/gly_rk/"> 入库 </a>
-    <br>
-    <a href="/gly_ck/"> 出库 </a>
-    <br>
-    <br>
-    <form role="form" action="/gly_smztcx/" method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="sm"> 书名 </label>
-            <input name="sm" type="text" class="form-control" id="sm" placeholder="" value="{{ sm }}" autofocus>
-        </div>
-        <div class="form-group">
-            <label for="zz"> 作者 </label>
-            <input name="zz" type="text" class="form-control" id="zz" placeholder="" value="{{ zz }}">
-        </div>
-        <div class="form-group">
-            <label for="isbn"> ISBN号 </label>
-            <input name="isbn" type="text" class="form-control" id="isbn" placeholder="" value="{{ isbn }}">
-        </div>
-        <div class="form-group">
-            <label for="cbs"> 出版社 </label>
-            <input name="cbs" type="text" class="form-control" id="cbs" placeholder="" value="{{ cbs }}">
-        </div>
-        <div class="form-group" style="color: red">{{ msg }}</div>
-        <br>
-        <button> 查询 </button>
-    </form>
-    {% if request.method == 'POST' %}
-        查询结果：
-        <br>
-        {% if not smzt %}
-            未找到匹配信息！
-        {% else %}
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th> ISBN号 </th>
-                        <th> 书名 </th>
-                        <th> 作者 </th>
-                        <th> 出版社 </th>
-                        <th> 出版年月 </th>
-                        <th> 库藏册数 </th>
-                        <th> 不外借册数 </th>
-                        <th> 未借出册数 </th>
-                        <th> 已借出册数 </th>
-                        <th> 已预约册数 </th>
-                    </tr>
+<!--顶部栏-->
+<nav class="navbar navbar-dark sticky-top flex-md-nowrap p-0 shadow" style="background-color: #29abff;">
+    <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="/gly_index/" style="font-weight: bold;font-size: x-large;">图书管理系统</a>
+    <span style="font-size: medium; color: #ffffff; margin-top: 0px; font-weight: bold;font-size: large;">欢迎  {{ xm }}</span>
+    <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+            <a class="nav-link" href="/logout_view/" style="font-weight: bold;color: #ffffff">退出登录</a>
+        </li>
+    </ul>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <!--侧边栏-->
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <div class="sidebar-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/gly_index/">
+                            <i class="zi zi_service"></i>
+                            <span>管理员首页</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/gly_smztcx/">
+                            <i class="zi zi_search"></i>
+                            <span>书目状态查询</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/gly_js/">
+                            <i class="zi zi_squareDown"></i>
+                            <span>借书</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/gly_hs/">
+                            <i class="zi zi_squareUp"></i>
+                            <span>还书</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/gly_rk/">
+                            <i class="zi zi_squarePlus"></i>
+                            <span>入库</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/gly_ck/">
+                            <i class="zi zi_squareLess"></i>
+                            <span>出库</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">书目状态查询</h1>
+            </div>
+            <form role="form" action="/gly_smztcx/" method="post">
+                {% csrf_token %}
+                <div class="form-group row">
+                    <label for="sm" class="col-md-1 col-form-label">书名</label>
+                    <div class="col-sm-3">
+                        <input name="sm" type="text" class="form-control" id="sm" placeholder="" value="{{ sm }}" autofocus name="sm">
+                    </div>
+                    <label for="zz" class="col-md-1 col-form-label"> 作者 </label>
+                    <div class="col-sm-3">
+                        <input name="zz" type="text" class="form-control" id="zz" placeholder="" value="{{ zz }}">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="isbn" class="col-md-1 col-form-label"> ISBN号 </label>
+                    <div class="col-sm-3">
+                        <input name="isbn" type="text" class="form-control" id="isbn" placeholder="" value="{{ isbn }}">
+                    </div>
+                    <label for="cbs" class="col-md-1 col-form-label"> 出版社 </label>
+                    <div class="col-sm-3">
+                        <input name="cbs" type="text" class="form-control" id="cbs" placeholder="" value="{{ cbs }}">
+                    </div>
+                </div>
+                <button class="btn btn-primary"> 查询</button>
+            </form>
+            <br>
+            {% if request.method == 'POST' %}
+            {% if not smzt %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert" style="display: inline-block">
+                未找到匹配信息！
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% else %}
+            <table class="table mt-3 table-hover" style="font-size: medium">
+                <thead class="thead-light">
+                <tr>
+                    <th scope="col"> ISBN号</th>
+                    <th scope="col"> 书名</th>
+                    <th scope="col"> 作者</th>
+                    <th scope="col"> 出版社</th>
+                    <th scope="col"> 出版年月</th>
+                    <th scope="col" nowrap="true"> 库藏册数</th>
+                    <th scope="col" nowrap="true"> 不外借册数</th>
+                    <th scope="col" nowrap="true"> 未借出册数</th>
+                    <th scope="col" nowrap="true"> 已借出册数</th>
+                    <th scope="col" nowrap="true"> 已预约册数</th>
+                </tr>
                 </thead>
                 <tbody>
-                    {% for elem in smzt %}
-                        <tr>
-                            <td> {{ elem.ISBN }} </td>
-                            <td> {{ elem.sm }} </td>
-                            <td> {{ elem.zz }} </td>
-                            <td> {{ elem.cbs }} </td>
-                            <td> {{ elem.cbny }} </td>
-                            <td> {{ elem.kccs }} </td>
-                            <td> {{ elem.bwjcs }} </td>
-                            <td> {{ elem.wjccs }} </td>
-                            <td> {{ elem.yjccs }} </td>
-                            <td> {{ elem.yyycs }} </td>
-                        </tr>
-                    {% endfor %}
+                {% for elem in smzt %}
+                <tr>
+                    <td nowrap="true"> {{ elem.ISBN }}</td>
+                    <td nowrap="true"> {{ elem.sm }}</td>
+                    <td nowrap="true"> {{ elem.zz }}</td>
+                    <td nowrap="true"> {{ elem.cbs }}</td>
+                    <td nowrap="true"> {{ elem.cbny }}</td>
+                    <td align='center' style="font-weight: bold"> {{ elem.kccs }}</td>
+                    <td align='center' style="font-weight: bold"> {{ elem.bwjcs }}</td>
+                    <td align='center' style="font-weight: bold"> {{ elem.wjccs }}</td>
+                    <td align='center' style="font-weight: bold"> {{ elem.yjccs }}</td>
+                    <td align='center' style="font-weight: bold"> {{ elem.yyycs }}</td>
+                </tr>
+                {% endfor %}
                 </tbody>
             </table>
-        {% endif %}
-    {% endif %}
+            {% endif %}
+            {% endif %}
+        </main>
+    </div>
+</div>
 </body>
 </html>
+<style>
+    body{
+        background-image:url("../../static/img/background-o.jpg");
+        background-size: cover;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background-repeat: no-repeat;
+        background-attachment:fixed;
+    }
+</style>

@@ -1,31 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link href="../../static/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="../../static/css/home.css" rel="stylesheet" type="text/css">
     <meta charset="UTF-8">
     <title>图书管理统一身份认证</title>
 </head>
-<body>
-    <h1>图书管理统一身份认证</h1>
-    {% if request.session.login_type %}
-        <h3> 欢迎 {{ request.session.xm }} ！</h3>
-        <a href="/logout_view/" style="color: red"> 退出登录 </a>
-    {% else %}
-        <h3> 登录 </h3>
-        <form role="form" action="/login_view/" method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="zh"> 账号 </label>
-                <input name="username" type="text" class="form-control" id="zh" placeholder="" value="{{ username }}" autofocus>
-            </div>
-            <div class="form-group">
-                <label for="mm"> 密码 </label>
-                <input name="password" type="password" class="form-control" id="mm" placeholder="" value="">
-            </div>
-            <div class="form-group" style="color: red">{{ msg }}</div>
-            <br>
-            <button> 登录 </button>
-        </form>
-        <a href="/register/"> 读者注册 </a>
-    {% endif %}
+<body class="text-center">
+<div class="background"></div>
+<!--<h1>图书管理统一身份认证</h1>-->
+
+<form class="login-box" role="form" action="/login_view/" method="post">
+    {% csrf_token %}
+    <h3 class="login-title"> 图书管理统一身份认证 </h3>
+    <label for="zh" class="left pt-1"> 账号 </label>
+    <input name="username" type="text" class="form-control" id="zh" placeholder="请输入E-mail或ID" value="{{ username }}" required autofocus>
+    <label for="mm" class="left pt-2"> 密码 </label>
+    <input name="password" type="password" class="form-control" id="mm" placeholder="请输入密码" value="">
+    <div class="form-group" style="color: red">{{ msg }}</div>
+    <button class="btn btn btn-primary mr-5" type="submit">登录</button>
+    <a class="btn btn-outline-primary" href="/register/" role="button">注册</a>
+</form>
+<div class="fixed-bottom text-muted" style="font-size: small">
+    Designer:<br>
+    Qin Minhao, Huang Yansong, Feng Jiawei
+</div>
+
 </body>
 </html>
+
+<style>
+    .login-box{
+        width: 350px;
+        margin: 150px auto;
+        border: 1px solid #DCDFE6;
+        padding: 25px;
+        border-radius: 5px;
+        box-shadow: 0 0 25px #DCDFE6;
+    }
+
+    .login-title{
+        text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .left{
+        float: left;
+    }
+
+    .background{
+        background-image:url("../../static/img/background-o.jpg");
+        background-size: 100% 100%;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background-repeat: no-repeat;
+        z-index: -1;
+    }
+</style>

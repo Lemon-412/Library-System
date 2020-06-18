@@ -14,13 +14,13 @@ from django.utils import timezone  # django带时区管理的时间类
 
 
 def mail(title, content, my_user, coding_type='HTML', retry_flag=False):  # 寄送邮件服务
-    my_sender = ''  # 发件人邮箱账号
-    my_pass = ''  # 发件人邮箱口令
-    really_mail = False
+    my_sender = '905157677@qq.com'  # 发件人邮箱账号
+    my_pass = 'rbtplvuhmqgmbaid'  # 发件人邮箱口令
+    really_mail = True
     print("\n=================发送邮件====================")
-    print("| 收件人：" + my_user)
-    print("| 标题：" + title)
-    print("| 正文：" + content)
+    print("|| 收件人：" + my_user)
+    print("|| 标题：" + title)
+    print("|| 正文：" + content)
     print("============================================\n")
     if not really_mail:
         return
@@ -107,7 +107,7 @@ def register(request):  # 新读者注册账户
         if not (xm and dh and yx and mm and mmqr):
             context['msg'] = "请填写完整的姓名、电话、邮箱和密码"
             return render(request, 'register.html', context=context)
-        if len(dh) != 11 or not dh.isdecimal:
+        if len(dh) != 11 or not dh.isdecimal():
             context["msg"] = "电话输入有误，请检查"
             return render(request, 'register.html', context=context)
         if mm != mmqr:
@@ -344,7 +344,7 @@ def gly_smztcx(request):  # 管理员书目状态查询
     else:
         context['sm'] = sm = request.POST.get('sm')  # 书名
         context['zz'] = zz = request.POST.get('zz')  # 作者
-        context['ISBN'] = isbn = request.POST.get('ISBN')  # ISBN
+        context['isbn'] = isbn = request.POST.get('isbn')  # ISBN
         context['cbs'] = cbs = request.POST.get('cbs')  # 出版社
         context['msg'] = "未知错误，请重试"
         result = smTable.objects.all()
@@ -390,6 +390,9 @@ def gly_js(request):  # 管理员借书
         context['msg'] = "未知错误，请重试"
         if not dzid or not isbn:
             context['msg'] = "请填写完整的读者id和ISBN号"
+            return render(request, 'gly_js.html', context=context)
+        if not dzid.isdecimal():
+            context['msg'] = "读者id不存在！"
             return render(request, 'gly_js.html', context=context)
         result = dzTable.objects.filter(dzid=dzid)
         if not result.exists():
@@ -460,6 +463,9 @@ def gly_hs(request):  # 管理员还书
         context['msg'] = "未知错误，请重试"
         if not dzid or not tsid:
             context['msg'] = "请填写完整的读者id和ISBN号"
+            return render(request, 'gly_hs.html', context=context)
+        if not dzid.isdecimal() or not tsid.isdecimal():
+            context['msg'] = "读者id和图书id必须是数字！"
             return render(request, 'gly_hs.html', context=context)
         result = dzTable.objects.filter(dzid=dzid)
         if not result.exists():
@@ -678,19 +684,19 @@ def gly_ck(request):  # 管理员出库
         if len(wjc) + len(bwj) + len(yyy) < cksl:
             context['msg'] = "由于部分书目已被借出，出库失败！"
             return render(request, 'gly_ck.html', context=context)
-        tsid = []
+        tsid = ''
         ck = []
         if ckyx == '流通室':  # 未借出 > 已预约 > 不外借
             for elem in wjc:
                 if cksl > 0:
-                    tsid.append(elem.tsid)
+                    tsid += str(elem.tsid) + ' '
                     ck.append(elem)
                     cksl -= 1
                 else:
                     break
             for elem in yyy:
                 if cksl > 0:
-                    tsid.append(elem.tsid)
+                    tsid += str(elem.tsid) + ' '
                     mail(
                         "预约失效通知",
                         "由于管理员出库，您预约的图书《" + smTable.objects.get(isbn=isbn).sm + "》不再存储，预约已经失效。",
@@ -702,7 +708,7 @@ def gly_ck(request):  # 管理员出库
                     break
             for elem in bwj:
                 if cksl > 0:
-                    tsid.append(elem.tsid)
+                    tsid += str(elem.tsid) + ' '
                     ck.append(elem)
                     cksl -= 1
                 else:
@@ -714,21 +720,21 @@ def gly_ck(request):  # 管理员出库
         else:  # 不外借 > 未借出 > 已预约
             for elem in bwj:
                 if cksl > 0:
-                    tsid.append(elem.tsid)
+                    tsid += str(elem.tsid) + ' '
                     ck.append(elem)
                     cksl -= 1
                 else:
                     break
             for elem in wjc:
                 if cksl > 0:
-                    tsid.append(elem.tsid)
+                    tsid += str(elem.tsid) + ' '
                     ck.append(elem)
                     cksl -= 1
                 else:
                     break
             for elem in yyy:
                 if cksl > 0:
-                    tsid.append(elem.tsid)
+                    tsid += str(elem.tsid) + ' '
                     mail(
                         "预约失效通知",
                         "由于管理员出库，您预约的图书《" + smTable.objects.get(isbn=isbn).sm + "》不再存储，预约已经失效。",

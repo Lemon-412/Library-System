@@ -2,47 +2,97 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title> 读者预约登记 </title>
+    <link href="../../static/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="../../static/css/dashboard.css" rel="stylesheet">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="../../static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../../static/zico/JS/zico.min.js"></script>
+    <title> 预约登记 </title>
 </head>
 <body>
-    <h1> 图书管理系统 </h1>
-    <h3> 读者预约登记 </h3>
-    <h3> 欢迎 {{ xm }}</h3>
-    <a href="/logout_view/"> 退出登录 </a>
-    <br><br>
-    <a href="/dz_smztcx/"> 书目状态查询 </a>
+<nav class="navbar navbar-dark sticky-top flex-md-nowrap p-0 shadow" style="background-color: #29abff;">
+    <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="/dz_index/" style="font-weight: bold;font-size: x-large;">图书管理系统</a>
+    <span style="font-size: medium; color: #ffffff; margin-top: 0px; font-weight: bold;font-size: large;">欢迎 {{ xm }}</span>
+    <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+            <a class="nav-link" href="/logout_view/" style="font-weight: bold;color: #ffffff">退出登录</a>
+        </li>
+    </ul>
+</nav>
+<div class="container-fluid">
+    <div class="row">
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <div class="sidebar-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dz_index/">
+                            <i class="zi zi_service"></i>
+                            <span>读者首页</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dz_smztcx/">
+                            <i class="zi zi_search"></i>
+                            <span>书目状态查询</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/dz_yydj/">
+                            <i class="zi zi_squareDown"></i>
+                            <span>预约登记</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dz_grztcx/">
+                            <i class="zi zi_squareUp"></i>
+                            <span>个人状态查询</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+<main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <h1 class="h2">预约登记</h1>
+    </div>
+    <h5 class="container-fluid">进行新的预约登记</h5>
     <br>
-    <a href="/dz_yydj/"> 预约登记 </a>
-    <br>
-    <a href="/dz_grztcx/"> 个人状态查询 </a>
-    <br><br>
-
-    进行新的预约登记:
-    <form role="form" action="/dz_yydj/" method="post">
+    <form role="form" action="/dz_yydj/" method="post" class="container-fluid">
         {% csrf_token %}
-        <div class="form-group">
-            <label for="ISBN"> ISBN号 </label>
-            <input name="ISBN" type="text" class="form-control" id="ISBN" placeholder="" value="{{ ISBN }}" autofocus>
+        <div class="form-group row">
+            <label for="ISBN" class="col-sm-1 col-form-label"> ISBN号 </label>
+            <div class="col-sm-2">
+                <input name="ISBN" type="text" class="form-control" id="ISBN" placeholder="" value="{{ ISBN }}"
+                       autofocus>
+            </div>
+            <button class="btn btn-primary mb-2" data-toggle="modal" data-target="#myModal"> 预约</button>
         </div>
-        <div class="form-group" style="color: red">{{ msg }}</div>
-        <br>
-        <button> 预约 </button>
+        {% if msg %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" style="display:inline-flex">
+                {{ msg }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endif %}
     </form>
-
-    当前已进行的预约登记:
     <br>
+    <hr>
+    <h5 class="container-fluid">当前已进行的预约登记:</h5>
     {% if yydj %}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th> ISBN号 </th>
-                    <th> 书名 </th>
-                    <th> 预约时间 </th>
-                    <th> 预约图书id </th>
-                </tr>
+        <table class="table container-fluid">
+            <thead class="thead-light">
+            <tr>
+                <th> ISBN号</th>
+                <th> 书名</th>
+                <th> 预约时间</th>
+                <th> 预约图书id</th>
+            </tr>
             </thead>
             <tbody>
-                {% for elem in yydj %}
+            {% for elem in yydj %}
                 <tr>
                     <td> {{ elem.ISBN }} </td>
                     <td> {{ elem.sm }} </td>
@@ -50,16 +100,28 @@
                     {% if elem.tsid %}
                         <td> {{ elem.tsid }} </td>
                     {% else %}
-                        <td> 暂无 </td>
+                        <td style="font-weight: bold"> 暂无</td>
                     {% endif %}
                 </tr>
-                {% endfor %}
+            {% endfor %}
             </tbody>
         </table>
     {% else %}
-        暂无记录！
+        <h6 class="container-fluid"><b>暂无记录！</b></h6>
         <br>
     {% endif %}
+</main>
 
 </body>
 </html>
+<style>
+    body {
+        background-image: url("../../static/img/background-o.jpg");
+        background-size: cover;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }
+</style>

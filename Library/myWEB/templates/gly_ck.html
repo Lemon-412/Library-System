@@ -2,47 +2,131 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link href="../../static/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="../../static/css/dashboard.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="../../static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../../static/zico/JS/zico.min.js"></script>
+    <script>
+        $(function () {
+            $('#alert').alert()
+        })
+    </script>
     <title> 管理员出库 </title>
 </head>
 <body>
-    <h1> 图书管理系统 </h1>
-    <h3> 管理员出库 </h3>
-    <h3> 欢迎 {{ xm }}</h3>
-    <a href="/logout_view/"> 退出登录 </a>
-    <br><br>
-    <a href="/gly_smztcx/"> 书目状态查询 </a>
-    <br>
-    <a href="/gly_js/"> 借书 </a>
-    <br>
-    <a href="/gly_hs/"> 还书 </a>
-    <br>
-    <a href="/gly_rk/"> 入库 </a>
-    <br>
-    <a href="/gly_ck/"> 出库 </a>
-    <br>
-    <br>
+<nav class="navbar navbar-dark sticky-top flex-md-nowrap p-0 shadow" style="background-color: #29abff;">
+    <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="/gly_index/" style="font-weight: bold;font-size: x-large;">图书管理系统</a>
+    <span style="font-size: medium; color: #ffffff; margin-top: 0px; font-weight: bold;font-size: large;">欢迎  {{ xm }}</span>
+    <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+            <a class="nav-link" href="/logout_view/" style="font-weight: bold;color: #ffffff">退出登录</a>
+        </li>
+    </ul>
+</nav>
+<div class="container-fluid">
+    <div class="row">
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <div class="sidebar-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/gly_index/">
+                            <i class="zi zi_service"></i>
+                            <span>管理员首页</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/gly_smztcx/">
+                            <i class="zi zi_search"></i>
+                            <span>书目状态查询</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/gly_js/">
+                            <i class="zi zi_squareDown"></i>
+                            <span>借书</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/gly_hs/">
+                            <i class="zi zi_squareUp"></i>
+                            <span>还书</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/gly_rk/">
+                            <i class="zi zi_squarePlus"></i>
+                            <span>入库</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/gly_ck/">
+                            <i class="zi zi_squareLess"></i>
+                            <span>出库</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">图书出库</h1>
+            </div>
+            <form role="form" action="/gly_ck/" method="post">
+                {% csrf_token %}
+                <div class="form-group row">
+                    <div class="col-sm-3">
+                        <label for="isbn"> ISBN号 </label>
+                        <input name="isbn" type="text" class="form-control" id="isbn" placeholder="请输入ISBN号" value="{{ isbn }}" autofocus>
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="cksl"> 出库数量 </label>
+                        <input name="cksl" type="number" min="1" class="form-control" id="cksl" placeholder="请输入出库数量" value="{{ cksl }}" autofocus>
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="ckyx"> 优先从何处出库（流通室、阅览室） </label>
+                        <select class="custom-select" name="ckyx">
+                            <option selected>请选择流通室或阅览室...</option>
+                            <option name="rkhzt" id="ckyx">流通室</option>
+                            <option name="rkhzt" id="ckyx">阅览室</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary">出库</button>
+                <br><br>
+                {% if msg %}
+                <div class="alert alert-primary alert-dismissible fade show" role="alert" style="display: inline-block">
+                    {{ msg }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {% endif %}
+                {% if tsid %}
+                <br>
+                <div class="alert alert-primary alert-dismissible fade show" role="alert" style="display: inline-flex">
+                    出库的图书ID： {{ tsid }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {% endif %}
+            </form>
+        </main>
 
-    <form role="form" action="/gly_ck/" method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="isbn"> ISBN号 </label>
-            <input name="isbn" type="text" class="form-control" id="isbn" placeholder="" value="{{ isbn }}" autofocus>
-        </div>
-        <div class="form-group">
-            <label for="cksl"> 出库数量 </label>
-            <input name="cksl" type="number" min="1" class="form-control" id="cksl" placeholder="" value="{{ cksl }}" autofocus>
-        </div>
-        <div class="form-group">
-            <label for="ckyx"> 优先从何处出库（流通室、阅览室） </label>
-            <input name="ckyx" type="text" class="form-control" id="ckyx" placeholder="" value="{{ ckyx }}" autofocus>
-        </div>
-        <div class="form-group" style="color: red"> {{ msg }} </div>
-        {% for elem in tsid %}
-            <font color="red"> {{ elem }} </font>
-        {% endfor %}
-        <br>
-        <button> 出库 </button>
-    </form>
-
+    </div>
+</div>
 </body>
 </html>
+<style>
+    body{
+        background-image:url("../../static/img/background-o.jpg");
+        background-size: cover;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background-repeat: no-repeat;
+        background-attachment:fixed;
+    }
+</style>

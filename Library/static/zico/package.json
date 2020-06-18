@@ -1,0 +1,45 @@
+{
+  "name": "zico",
+  "version": "1.5.00",
+  "description": "A web icon framework by Zoomla!CMS team,一个专为中国开发者而生的跨平台图标解决方案|基于zico技术可快速渲染webfont或svg矢量图标,并提供免费的网页字体,由知名的Zoomla!逐浪CMS团队维护",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "webfont",
+    "网站图标",
+    "web图标",
+    "svg图标",
+    "China图标",
+    "China icons",
+    "JS图标",
+    "东方图标",
+    "中国图标",
+    "逐浪图标",
+    "手机图标",
+    "字体图标",
+    "医疗图标",
+    "矢量图标",
+    "保真图标",
+    "中国图标",
+    "政务图标",
+    "免费图标",
+    "CMS图标",
+    "中国企业ico",
+    "中国百强企业图标"
+  ],
+  "author": "Shanghai  Zoomla!CMS Software co.,ltd",
+  "license": "MIT",
+  "directories": {
+    "lib": "lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zoomla/zico.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zoomla/zico/issues"
+  },
+  "homepage": "https://ico.z01.com"
+}

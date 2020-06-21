@@ -10,6 +10,9 @@
           <option value="myWEB.models.dzTable.objects" />
           <option value="myWEB.models.tsglyTable.objects" />
           <option value="myWEB.models.jsTable.objects" />
+          <option value="django.db.models.fields.related.ForeignKey.sm" />
+          <option value="django.db.models.fields.related.ForeignKey.email" />
+          <option value="django.db.models.fields.related.ForeignKey.isbn" />
         </list>
       </option>
     </inspection_tool>
